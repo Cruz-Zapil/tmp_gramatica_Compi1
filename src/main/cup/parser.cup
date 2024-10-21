@@ -1,0 +1,504 @@
+package com.zapil.app; 
+import java_cup.runtime.*;
+import java.util.*;
+
+
+parser code{: 
+
+    public void syntax_error(Symbol s){ 
+        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+        " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
+
+       // PanelReporte.agregarError(new Errores("Sintactico",String.valueOf(s.value),"no se esperaba: "+String.valueOf( s.value), s.left, s.right));
+    } 
+    /**
+     * Método al que se llama cuando se identifica un error sintáctico en el que 
+     * ya no es posible una recuperación de errores.
+     **/ 
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error síntactico irrecuperable en la Línea " + 
+        (s.left)+ " Columna "+s.right+". Componente " + s.value + " no reconocido.");
+
+    } 
+
+
+
+    :}
+
+
+terminal COMILLAS ,LLAVE_IZQ ,LLAVE_DER ,CORCHETE_IZQ ,CORCHETE_DER ,PAR_IZQ ,PAR_DER ,MENOR ,MAYOR, DOS_PUNTOS ,HTML ,HTML_C ,HEAD ,HEAD_C ,TITLE ,TITLE_C ,LINK ,LINK_C ,BODY ,BODY_C ,SPAM ,SPAN_C;
+terminal INPUT, INPUT_C, TEXTOAREA, TEXTOAREA_C, SELECTED ,SELECTED_C ,OPTION ,OPTION_C ,DIV ,DIV_C ,IMG ,IMG_C ,BR ,BR_C ,BUTTON ,BUTTON_C ,H1 ,H1_C ,P ,P_C, HREF, BACKGROUND;
+terminal BLACK, OLIVE, TEAL, RED, BLUE, MARRON, NAVY, GRAY, LIME, FUCHSIA, GREEN, WHITE, PURPLE, SILVER, YELLOW, AQUA, HEXADECIMAL;
+terminal COLOR, FONT_SIZE, PIXEL, FONT_FAMI, COURIER, VERDANA, ARIAL, GENEVA, SANS_SERIF, TEXT_ALIGN, LEFT, RIGHT, CENTER, JUSTITY, TYPE, TEXT, NUMBER, RADIO, CHECKBOX, ID, NAME, COLS, ROWS, CLASS, SRC, WIDTH, HEIGHT, ALT, ONCLICK;
+terminal SCRIPTING, SCRIPTING_C, ON_LOAD, INTEGER, DECIMAL, BOOLEAN, CHAR, STRING, COMPARACION, DESIGUALDAD, MENOR_IGUAL, MAYOR_IGUAL, OR, AND, NOT, IGUAL, SUMA, RESTA, PLUS, DIVISION,  ASC, DESC;
+terminal LETIMPAR_NUM, REVERSE, CARACTER_RAMD, NUM_ALEATORIO, ALERT_INFO, EXIT, REDIRECT, INIT, IF, THEN, END, ELSE, REPEAT, HUNTIL, INSERT, WHILE, THENWHILE;
+
+terminal FUNTION, COMILLA_SIMPLE, DOS_PUNTOS, CADENA, TRUE, FALSE, ENTERO, DECIMAL, PUNTO_COMA, IDENTIFICADOR, NUMERO, ROW, COLUMN, GLOBAL;
+terminal CHARS;
+
+non terminal iniciar, body, colors, font, align, etiqueta, etiq, paramsSpam, parametros_spam;
+non terminal paramsInput, parametros_input, type_input, paramsTextoArea, parametros_TextoArea, paramsSelect, parametros_Select, paramsDiv, parametros_Div, clase;
+non terminal paramsImg, parametros_Img, paramsButton, parametros_Button, paramsH1, parametros_H1, paramsP, parametros_P, script;
+non terminal funcion, on_load, background;
+
+
+iniciar ::= MENOR HTML CORCHETE_IZQ ID IGUAL COMILLAS IDENTIFICADOR COMILLAS CORCHETE_DER CORCHETE_IZQ NAME IGUAL COMILLAS CADENA COMILLAS CORCHETE_DER MAYOR 
+        MENOR HEAD MAYOR  MENOR LINK CORCHETE_IZQ HREF IGUAL COMILLAS CADENA COMILLAS CORCHETE_DER MAYOR  MENOR LINK_C MAYOR MENOR TITLE MAYOR CADENA MENOR TITLE_C MAYOR MENOR HEAD_C MAYOR
+        MENOR BODY background MAYOR etiq MENOR BODY_C MAYOR MENOR HTML_C MAYOR;
+
+background ::= /* vacio */
+        | BACKGROUND IGUAL COMILLAS colors COMILLAS;
+
+
+etiq ::=  /* vacio*/
+        | etiqueta 
+        | etiq etiqueta
+        | error;
+
+etiqueta ::= MENOR SPAM paramsSpam MAYOR 123 MENOR SPAN_C MAYOR
+        | MENOR INPUT paramsInput  MAYOR 1234 MENOR INPUT_C MAYOR
+        | MENOR TEXTOAREA paramsTextoArea MAYOR 123 MENOR TEXTOAREA_C MAYOR
+        | MENOR SELECTED paramsSelect MAYOR 123 MENOR SELECTED_C MAYOR
+        | MENOR OPTION 123  MAYOR 123 MENOR OPTION_C MAYOR
+        | MENOR DIV MAYOR parametros_Div MENOR DIV_C MAYOR
+        | MENOR IMG MAYOR paramsImg MENOR IMG_C MAYOR
+     123   | MENOR BR MAYOR  MENOR BR_C MAYOR
+        | MENOR BUTTON paramsButton MAYOR 123 MENOR BUTTON_C MAYOR
+        | MENOR H1 paramsH1 MAYOR 123 MENOR H1_C MAYOR 
+        | MENOR P paramsP MAYOR 123 MENOR P_C MAYOR
+        | error;
+
+
+
+script ::= /* vacio */
+        | MENOR SCRIPTING MAYOR FUNTION CORCHETE_IZQ funcion CORCHETE_DER MENOR SCRIPTING_C MAYOR
+        | MENOR SCRIPTING MAYOR ON_LOAD CORCHETE_IZQ on_load CORCHETE_DER MENOR SCRIPTING_C MAYOR
+        | error;
+
+
+funcion ::= /* vacio */
+        | declaracion
+        | sentenciaIf
+        | clicloRepeat
+        | cicloWhile
+        | insert
+        | error;
+
+
+
+//***********************
+//********+ IF +*********
+//***********************
+//***********************
+
+
+
+sentenciaIf ::= IF PAREN_IZQ condicion PAREN_DER THEN bloque_instrucciones 
+               | IF PAREN_IZQ condicion PAREN_DER THEN bloque_instrucciones sentencia_else_if 
+               | IF PAREN_IZQ condicion PAREN_DER THEN bloque_instrucciones sentencia_else;
+
+sentencia_else_if ::= ELSE IF PAREN_IZQ condicion PAREN_DER THEN bloque_instrucciones 
+                    | ELSE IF PAREN_IZQ condicion PAREN_DER THEN bloque_instrucciones sentencia_else_if
+                    | ELSE IF PAREN_IZQ condicion PAREN_DER THEN bloque_instrucciones sentencia_else;
+
+sentencia_else ::= ELSE bloque_instrucciones;
+
+/* Producción para un bloque de instrucciones que comienza con INIT y termina con END */
+bloque_instrucciones ::= INIT LLAVE_IZQ DOS_PUNTOS lista_instrucciones DOS_PUNTOS LLAVE_DER END
+                       | lista_instrucciones; 
+
+/* Lista de instrucciones puede ser cero o más */
+lista_instrucciones ::= /* vacío */
+                      | lista_instrucciones 123;
+
+
+
+/* Esta es una definición simplificada de una instrucción */
+instruccion ::= IDENTIFICADOR PUNTO_COMA;
+
+/* Ejemplo de una expresión booleana */
+expresion_booleana ::= TRUE
+                     | FALSE
+                     | IDENTIFICADOR;
+
+
+// Producción principal para las condiciones del IF
+condicion ::= condicion_relacional
+            | condicion_logica
+            | llamada_funcion_booleana
+            | PAR_IZQ condicion PAR_DER;  // Permite agrupar expresiones
+
+// Producciones para comparaciones relacionales
+condicion_relacional ::= expresion COMPARACION expresion
+                       | expresion DESIGUALDAD expresion
+                       | expresion MENOR expresion
+                       | expresion MAYOR expresion
+                       | expresion MENOR_IGUAL expresion
+                       | expresion MAYOR_IGUAL expresion;
+                 
+
+// Producciones para operaciones lógicas
+condicion_logica ::= condicion AND condicion
+                   | condicion OR condicion
+                   | NOT condicion;
+
+// Producción para llamadas a funciones que retornan booleano
+llamada_funcion_booleana ::= IDENTIFICADOR PAR_IZQ lista_parametros PAR_DER;
+
+
+lista_parametros ::= /* vacío */
+                   | lista_parametros COMA expresion
+                   | expresion;
+
+
+// Producción para una expresión (puede ser un valor numérico, identificador, etc.)
+expresion ::= NUMERO
+            | IDENTIFICADOR
+            | llamada_funcion_booleana
+            | expresion_aritmetica;
+
+// Producción para una expresión aritmética (opcional, si se quieren manejar operaciones)
+expresion_aritmetica ::= expresion SUMA expresion
+                       | expresion RESTA expresion
+                       | expresion MULTIPLICACION expresion
+                       | expresion DIVISION expresion
+                       | PAR_IZQ expresion_aritmetica PAR_DER;
+
+
+//***********************
+//******+ REPEAT +*******
+//***********************
+//***********************
+
+
+// Producción principal para el ciclo REPEAT
+ciclo_repeat ::= REPEAT PAR_IZQ inicializacion PAR_DER HUNTIL PAR_IZQ condicion_limite PAR_DER bloque_instrucciones;
+
+// Producción para la inicialización (asignación o declaración)
+inicializacion ::= tipo_variable IDENTIFICADOR IGUAL expresion // Declaración con tipo
+                 | IDENTIFICADOR IGUAL expresion;               // Asignación simple
+
+// Producción para el límite de la condición
+condicion_limite ::= expresion_numerica // Puede ser una expresión numérica
+                   | IDENTIFICADOR;     // O una variable
+
+// Producción para el bloque de instrucciones
+bloque_instrucciones ::= INIT LLAVE_IZQ lista_instrucciones LLAVE_DER END
+                       | instruccion_simple;
+
+// Producción para lista de instrucciones en un bloque
+lista_instrucciones ::= instruccion_simple
+                      | lista_instrucciones instruccion_simple;
+
+// Producción para una instrucción simple
+instruccion_simple ::= IDENTIFICADOR PAR_IZQ lista_parametros PAR_DER PUNTO_COMA
+                     | IDENTIFICADOR IGUAL expresion PUNTO_COMA
+                     | expresion PUNTO_COMA;
+
+// Producción para el tipo de variable en una declaración
+tipo_variable ::= INTEGER
+                | DECIMAL
+                | BOOLEAN
+                | CHAR
+                | STRING;
+
+// Producción para expresiones numéricas
+expresion_numerica ::= expresion
+                     | PAR_IZQ expresion PAR_DER;
+
+// Producción para la expresión genérica
+expresion ::= expresion OPERADOR_ARITMETICO expresion
+            | NUMERO
+            | IDENTIFICADOR
+            | PAR_IZQ expresion PAR_DER;
+
+// Producción para la lista de parámetros en una llamada de función
+lista_parametros ::= parametro
+                   | lista_parametros COMA parametro;
+
+// Producción para un parámetro
+parametro ::= IDENTIFICADOR
+            | expresion;
+            
+
+
+//***********************
+//****+ CICLO WHILE +****
+//***********************
+//***********************
+
+
+ciclo_while ::= WHILE PAR_IZQ condicion PAR_DER  THENWHILE bloque_instrucciones;
+
+// Producción para la condición del ciclo WHILE
+condicion ::= expresion_booleana
+            | IDENTIFICADOR; // Puede ser una expresión booleana o una variable booleana
+
+// Producción para el bloque de instrucciones
+bloque_instrucciones ::= INIT LLAVE_IZQ lista_instrucciones LLAVE_DER END
+                       | instruccion_simple;
+
+// Producción para la lista de instrucciones dentro del bloque
+lista_instrucciones ::= instruccion_simple
+                      | lista_instrucciones instruccion_simple;
+
+// Producción para una instrucción simple
+instruccion_simple ::= IDENTIFICADOR PAR_IZQ lista_parametros PAR_DER PUNTO_COMA
+                     | IDENTIFICADOR IGUAL expresion PUNTO_COMA
+                     | expresion PUNTO_COMA;
+
+// Producción para expresiones booleanas
+expresion_booleana ::= expresion OPERADOR_RELACIONAL expresion
+                     | expresion OPERADOR_LOGICO expresion_booleana
+                     | TRUE
+                     | FALSE
+                     | PAR_IZQ expresion_booleana PAR_DER;
+
+// Producción para la expresión genérica
+expresion ::= expresion OPERADOR_ARITMETICO expresion
+            | NUMERO
+            | IDENTIFICADOR
+            | PAR_IZQ expresion PAR_DER;
+
+// Producción para la lista de parámetros en una llamada de función
+lista_parametros ::= parametro
+                   | lista_parametros COMA parametro;
+
+// Producción para un parámetro
+parametro ::= IDENTIFICADOR
+            | expresion;
+
+
+
+
+//***********************
+//****+ DECLARACION +****
+//***********************
+//***********************
+
+
+
+declaracion ::= INTEGER modo IDENTIFICADOR IGUAL ENTERO PUNTO_COMA
+        | INTEGER modo IDENTIFICADOR PUNTO_COMA
+        | INTEGER modo integerComa PUNTO_COMA
+        | DECIMAL modo IDENTIFICADOR IGUAL DECIMAL PUNTO_COMA
+        | DECIMAL mdod  IDENTIFICADOR  PUNTO_COMA
+        | DECIMAL mdod decimalComa  PUNTO_COMA
+        | BOOLEAN modo IDENTIFICADOR IGUAL bool PUNTO_COMA
+        | BOOLEAN modo IDENTIFICADOR PUNTO_COMA
+        | BOOLEAN modo booleanComa PUNTO_COMA
+        | CHAR modo IDENTIFICADOR IGUAL CHARS PUNTO_COMA
+        | CHAR modo IDENTIFICADOR PUNTO_COMA
+        | CHAR modo charComa PUNTO_COMA
+        | STRING modo IDENTIFICADOR IGUAL CADENA PUNTO_COMA
+        | STRING modo IDENTIFICADOR PUNTO_COMA
+        | STRING modo stringComa PUNTO_COMA
+        | IDENTIFICADOR
+        | error;
+
+
+charComa::= IDENTIFICADOR
+        | IDENTIFICADOR COMA charComa
+        | IDENTIFICADOR IGUAL 123 COMA charComa
+        | error;
+
+reglaChar::= 
+
+
+decimalComa::= IDENTIFICADOR
+        | IDENTIFICADOR COMA decimalComa
+        | IDENTIFICADOR IGUAL 123 COMA decimalComa
+        | error;
+
+reglaDecimal::= 
+
+booleanComa::= IDENTIFICADOR
+        | IDENTIFICADOR COMA booleanComa
+        | IDENTIFICADOR IGUAL 123 COMA booleanComa
+        | error;
+
+
+reglaBoolean::= 
+
+stringComa::= IDENTIFICADOR
+        | IDENTIFICADOR COMA stringComa
+        | IDENTIFICADOR IGUAL 123 COMA stringComa
+        | error;
+
+
+reglaString::=
+
+integerComa::= IDENTIFICADOR 
+        | IDENTIFICADOR COMA integerComa 
+        | IDENTIFICADOR IGUAL 123 COMA integerComa 
+        | error;
+
+
+reglaInteger::= 
+
+
+bool::= TRUE
+        |FALSE
+        | error;
+
+modo ::= /*vacio*/
+        | GLOBAL 
+        | error;
+
+
+
+paramsP ::=    /* vacío */ 
+                |CORCHETE_IZQ parametros_P CORCHETE_DER
+                | paramsP CORCHETE_IZQ parametros_P CORCHETE_DER;
+
+parametros_P ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
+                | FONT_FAMI IGUAL COMILLAS font COMILLAS
+                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
+                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
+                | COLOR IGUAL COMILLAS colors COMILLAS
+                | error;
+
+paramsH1 ::=    /* vacío */ 
+                |CORCHETE_IZQ parametros_H1 CORCHETE_DER
+                | paramsH1 CORCHETE_IZQ parametros_H1 CORCHETE_DER;
+
+parametros_H1 ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
+                | FONT_FAMI IGUAL COMILLAS font COMILLAS
+                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
+                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
+                | COLOR IGUAL COMILLAS colors COMILLAS
+                | error;
+
+
+
+
+paramsButton ::=    /* vacío */ 
+                |CORCHETE_IZQ parametros_Button CORCHETE_DER
+                | paramsButton CORCHETE_IZQ parametros_Button CORCHETE_DER;
+
+parametros_Button ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
+                | FONT_FAMI IGUAL COMILLAS font COMILLAS
+                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
+                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
+                | COLOR IGUAL COMILLAS colors COMILLAS
+                | BACKGROUND IGUAL COMILLAS colors COMILLAS
+                | ONCLICK IGUAL COMILLAS 123 COMILLAS
+                | error;
+
+
+paramsImg ::=    /* vacío */ 
+                |CORCHETE_IZQ parametros_Img CORCHETE_DER
+                | paramsImg CORCHETE_IZQ parametros_Img CORCHETE_DER;
+
+parametros_Img ::= SRC IGUAL COMILLAS CADENA COMILLAS
+                | WIDTH IGUAL COMILLAS NUMERO COMILLAS
+                | HEIGHT IGUAL COMILLAS NUMERO COMILLAS
+                | ALT IGUAL COMILLAS CADENA COMILLAS
+                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
+                | error;
+
+paramsDiv ::=    /* vacío */ 
+                |CORCHETE_IZQ parametros_Div CORCHETE_DER
+                | paramsDiv CORCHETE_IZQ parametros_Div CORCHETE_DER;
+
+parametros_Div ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
+                | FONT_FAMI IGUAL COMILLAS font COMILLAS
+                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
+                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
+                | CLASS IGUAL COMILLAS clase  COMILLAS
+                | COLOR IGUAL COMILLAS colors COMILLAS
+                | BACKGROUND IGUAL COMILLAS colors COMILLAS
+                | error;
+
+clase ::= ROW
+        | COLUMN
+        | error;
+
+
+paramsSelect ::=    /* vacío */ 
+                |CORCHETE_IZQ parametros_Select CORCHETE_DER
+                | paramsSelect CORCHETE_IZQ parametros_Select CORCHETE_DER;
+
+parametros_Select ::= FONT_SIZE IGUAL COMILLAS PIXEL  COMILLAS
+                | FONT_FAMI IGUAL COMILLAS font COMILLAS
+                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
+                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
+                | COLOR IGUAL COMILLAS colors COMILLAS
+                | error;
+
+
+paramsTextoArea ::=   /* vacío */ 
+                |CORCHETE_IZQ parametros_TextoArea CORCHETE_DER
+                | paramsTextoArea CORCHETE_IZQ parametros_TextoArea CORCHETE_DER;
+
+parametros_TextoArea ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS 
+                        | FONT_FAMI IGUAL COMILLAS font COMILLAS
+                        | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
+                        | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS 
+                        | COLS IGUAL COMILLAS NUMERO COMILLAS 
+                        | ROWS IGUAL COMILLAS NUMERO COMILLAS
+                        | error;
+                        
+
+paramsInput ::=    /* vacío */ 
+                |CORCHETE_IZQ parametros_input CORCHETE_DER
+                | paramsInput CORCHETE_IZQ parametros_input CORCHETE_DER;
+
+parametros_input ::= TYPE IGUAL COMILLAS type_input COMILLAS
+                | FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
+                | FONT_FAMI IGUAL COMILLAS font COMILLAS
+                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
+                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
+                | COLOR IGUAL COMILLAS colors COMILLAS
+                | error;
+
+type_input ::= TEXT
+                | NUMBER
+                | RADIO
+                | CHECKBOX
+                | error;
+
+paramsSpam ::=    /* vacío */ 
+                |CORCHETE_IZQ parametros_spam CORCHETE_DER
+                | paramsSpam CORCHETE_IZQ parametros_spam CORCHETE_DER;
+
+parametros_spam ::= COLOR IGUAL COMILLAS colors COMILLAS
+                | FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
+                | FONT_FAMI IGUAL COMILLAS font COMILLAS
+                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
+                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
+                | error;
+
+align ::= LEFT 
+        | RIGHT
+        | CENTER
+        | JUSTITY
+        | error;
+
+
+font ::= COURIER
+        | VERDANA
+        | ARIAL
+        | GENEVA
+        | SANS_SERIF
+        | error;
+                
+colors ::= BLACK
+            | OLIVE
+            | TEAL
+            | RED
+            | BLUE
+            | MARRON
+            | NAVY
+            | GRAY
+            | LIME
+            | FUCHSIA
+            | GREEN
+            | WHITE
+            | PURPLE
+            | SILVER
+            | YELLOW
+            | AQUA
+            | HEXADECIMAL
+            | error;
+
