@@ -29,12 +29,12 @@ parser code{:
 terminal COMILLAS ,LLAVE_IZQ ,LLAVE_DER ,CORCHETE_IZQ ,CORCHETE_DER ,PAR_IZQ ,PAR_DER ,MENOR ,MAYOR, DOS_PUNTOS ,HTML ,HTML_C ,HEAD ,HEAD_C ,TITLE ,TITLE_C ,LINK ,LINK_C ,BODY ,BODY_C ,SPAM ,SPAN_C;
 terminal INPUT, INPUT_C, TEXTOAREA, TEXTOAREA_C, SELECTED ,SELECTED_C ,OPTION ,OPTION_C ,DIV ,DIV_C ,IMG ,IMG_C ,BR ,BR_C ,BUTTON ,BUTTON_C ,H1 ,H1_C ,P ,P_C, HREF, BACKGROUND;
 terminal BLACK, OLIVE, TEAL, RED, BLUE, MARRON, NAVY, GRAY, LIME, FUCHSIA, GREEN, WHITE, PURPLE, SILVER, YELLOW, AQUA, HEXADECIMAL;
-terminal COLOR, FONT_SIZE, PIXEL, FONT_FAMI, COURIER, VERDANA, ARIAL, GENEVA, SANS_SERIF, TEXT_ALIGN, LEFT, RIGHT, CENTER, JUSTITY, TYPE, TEXT, NUMBER, RADIO, CHECKBOX, ID, NAME, COLS, ROWS, CLASS, SRC, WIDTH, HEIGHT, ALT, ONCLICK;
+terminal COLOR, FONT_SIZE, PIXEL, FONT_FAMI, COURIER, VERDANA, ARIAL, GENEVA, SANS_SERIF, TEXT_ALIGN, LEFT, RIGHT, CENTER, JUSTIFY, TYPE, TEXT, NUMBER, RADIO, CHECKBOX, ID, NAME, COLS, ROWS, CLASS, SRC, WIDTH, HEIGHT, ALT, ONCLICK;
 terminal SCRIPTING, SCRIPTING_C, ON_LOAD, INTEGER, DECIMAL, BOOLEAN, CHAR, STRING, COMPARACION, DESIGUALDAD, MENOR_IGUAL, MAYOR_IGUAL, OR, AND, NOT, IGUAL, SUMA, RESTA, PLUS, DIVISION,  ASC, DESC;
 terminal LETIMPAR_NUM, REVERSE, CARACTER_RAMD, NUM_ALEATORIO, ALERT_INFO, EXIT, REDIRECT, INIT, IF, THEN, END, ELSE, REPEAT, HUNTIL, INSERT, WHILE, THENWHILE;
 
 terminal FUNTION, COMILLA_SIMPLE, DOS_PUNTOS, CADENA, TRUE, FALSE, ENTERO, DECIMAL, PUNTO_COMA, IDENTIFICADOR, NUMERO, ROW, COLUMN, GLOBAL;
-terminal CHARS;
+terminal CHARS, TEXT;
 
 non terminal iniciar, body, colors, font, align, etiqueta, etiq, paramsSpam, parametros_spam;
 non terminal paramsInput, parametros_input, type_input, paramsTextoArea, parametros_TextoArea, paramsSelect, parametros_Select, paramsDiv, parametros_Div, clase;
@@ -55,20 +55,21 @@ etiq ::=  /* vacio*/
         | etiq etiqueta
         | error;
 
-etiqueta ::= MENOR SPAM paramsSpam MAYOR 123 MENOR SPAN_C MAYOR
-        | MENOR INPUT paramsInput  MAYOR 1234 MENOR INPUT_C MAYOR
-        | MENOR TEXTOAREA paramsTextoArea MAYOR 123 MENOR TEXTOAREA_C MAYOR
-        | MENOR SELECTED paramsSelect MAYOR 123 MENOR SELECTED_C MAYOR
-        | MENOR OPTION 123  MAYOR 123 MENOR OPTION_C MAYOR
-        | MENOR DIV MAYOR parametros_Div MENOR DIV_C MAYOR
-        | MENOR IMG MAYOR paramsImg MENOR IMG_C MAYOR
-     123   | MENOR BR MAYOR  MENOR BR_C MAYOR
-        | MENOR BUTTON paramsButton MAYOR 123 MENOR BUTTON_C MAYOR
-        | MENOR H1 paramsH1 MAYOR 123 MENOR H1_C MAYOR 
-        | MENOR P paramsP MAYOR 123 MENOR P_C MAYOR
+etiqueta ::= MENOR SPAM paramsSpam MAYOR TEXT:txt MENOR SPAN_C MAYOR               {: System.out.println(" SPAM: " + txt); :}  
+        | MENOR INPUT paramsInput  MAYOR  MENOR INPUT_C MAYOR                      {: System.out.println(" INPUT: " + ); :}
+        | MENOR TEXTOAREA paramsTextoArea MAYOR  MENOR TEXTOAREA_C MAYOR           {: System.out.println(" TEXTO_ AREA:  "  ); :}    
+        | MENOR SELECTED paramsSelect MAYOR options:opt MENOR SELECTED_C MAYOR     {: System.out.println(" SELECTED: " + opt ); :}        
+        | MENOR DIV parametros_Div MAYOR etiqueta MENOR DIV_C MAYOR                {: System.out.println(" DIV "  ); :} 
+        | MENOR IMG MAYOR paramsImg MENOR IMG_C:img MAYOR                          {: System.out.println(" IMG " + img ); :}     
+        | MENOR BR MAYOR                                                           {: System.out.println(" BR " ); :}     
+        | MENOR BUTTON paramsButton MAYOR TEXT:txt MENOR BUTTON_C MAYOR            {: System.out.println(" BUTTON " + txt ); :}  
+        | MENOR H1 paramsH1 MAYOR TEXT MENOR H1_C:h1 MAYOR                         {: System.out.println(" H1 " + h1); :}  
+        | MENOR P paramsP MAYOR TEXT:txt MENOR P_C MAYOR                           {: System.out.println(" P " + txt); :}       
         | error;
 
-
+options ::=  MENOR OPTION VALUE IGUAL COMILLAS IDENTIFICADOR COMILLAS MAYOR
+        | MENOR OPTION VALUE IGUAL COMILLAS IDENTIFICADOR COMILLAS MAYOR options
+        | error;
 
 script ::= /* vacio */
         | MENOR SCRIPTING MAYOR FUNTION CORCHETE_IZQ funcion CORCHETE_DER MENOR SCRIPTING_C MAYOR
@@ -270,6 +271,15 @@ parametro ::= IDENTIFICADOR
 
 
 
+//***********************
+//***+ FUNCIONES CLC +***
+//***********************
+//***********************
+
+
+
+
+
 
 //***********************
 //****+ DECLARACION +****
@@ -299,42 +309,132 @@ declaracion ::= INTEGER modo IDENTIFICADOR IGUAL ENTERO PUNTO_COMA
 
 charComa::= IDENTIFICADOR
         | IDENTIFICADOR COMA charComa
-        | IDENTIFICADOR IGUAL 123 COMA charComa
+        | IDENTIFICADOR IGUAL reglaChar COMA charComa
         | error;
 
-reglaChar::= 
+reglaChar::= CHARS
+        | CHARS SUMA NUMERO    
+        | CHARS SUMA CADENA
+        | CHARS SUMA DECIMAL
+        | CHARS SUMA CHARS
+        | CHARS SUMA bool
+        | CHARS SUMA IDENTIFICADOR
+        | CHARS RESTA NUMERO
+        | CHARS RESTA DECIMAL
+        | CHARS RESTA CHARS
+        | CHARS RESTA IDENTIFICADOR
+        | CHARS MULTIPLICACION NUMERO
+        | CHARS MULTIPLICACION DECIMAL
+        | CHARS MULTIPLICACION CHARS
+        | CHARS MULTIPLICACION bool
+        | CHARS MULTIPLICACION IDENTIFICADOR
+        | CHARS DIVISION INTEGER
+        | CHARS DIVISION DECIMAL
+        | CHARS DIVISION CHARS
+        | CHARS DIVISION bool 
+        | CHARS DIVISION IDENTIFICADOR
+        | error;
 
 
 decimalComa::= IDENTIFICADOR
         | IDENTIFICADOR COMA decimalComa
-        | IDENTIFICADOR IGUAL 123 COMA decimalComa
+        | IDENTIFICADOR IGUAL reglaDecimal COMA decimalComa
         | error;
 
-reglaDecimal::= 
+reglaDecimal::= DECIMAL
+        | DECIMAL SUMA NUMERO    
+        | DECIMAL SUMA CADENA
+        | DECIMAL SUMA DECIMAL
+        | DECIMAL SUMA CHARS
+        | DECIMAL SUMA bool
+        | DECIMAL SUMA IDENTIFICADOR
+        | DECIMAL RESTA NUMERO
+        | DECIMAL RESTA DECIMAL
+        | DECIMAL RESTA CHARS
+        | DECIMAL RESTA bool
+        | DECIMAL RESTA IDENTIFICADOR
+        | DECIMAL MULTIPLICACION NUMERO
+        | DECIMAL MULTIPLICACION DECIMAL
+        | DECIMAL MULTIPLICACION CHARS
+        | DECIMAL MULTIPLICACION bool
+        | DECIMAL MULTIPLICACION IDENTIFICADOR
+        | DECIMAL DIVISION INTEGER
+        | DECIMAL DIVISION DECIMAL
+        | DECIMAL DIVISION CHARS
+        | DECIMAL DIVISION bool 
+        | DECIMAL DIVISION IDENTIFICADOR
+        | error;
 
 booleanComa::= IDENTIFICADOR
         | IDENTIFICADOR COMA booleanComa
-        | IDENTIFICADOR IGUAL 123 COMA booleanComa
+        | IDENTIFICADOR IGUAL reglaBoolean COMA booleanComa
         | error;
 
 
-reglaBoolean::= 
+reglaBoolean::= bool
+        | bool SUMA NUMERO    
+        | bool SUMA DECIMAL
+        | bool SUMA CHARS
+        | bool SUMA bool
+        | bool SUMA IDENTIFICADOR
+        | bool RESTA NUMERO
+        | bool RESTA DECIMAL
+        | bool RESTA IDENTIFICADOR
+        | bool MULTIPLICACION NUMERO
+        | bool MULTIPLICACION DECIMAL
+        | bool MULTIPLICACION CHARS
+        | bool MULTIPLICACION bool
+        | bool MULTIPLICACION IDENTIFICADOR
+        | bool DIVISION INTEGER
+        | bool DIVISION DECIMAL
+        | bool DIVISION CHARS
+        | bool DIVISION IDENTIFICADOR
+        | error;
 
 stringComa::= IDENTIFICADOR
         | IDENTIFICADOR COMA stringComa
-        | IDENTIFICADOR IGUAL 123 COMA stringComa
+        | IDENTIFICADOR IGUAL reglaString COMA stringComa
         | error;
 
 
-reglaString::=
+reglaString::= CADENA
+        | CADENA SUMA NUMERO   
+        | CADENA SUMA CADENA 
+        | CADENA SUMA DECIMAL
+        | CADENA SUMA CHARS
+        | CADENA SUMA bool
+        | CADENA SUMA IDENTIFICADOR
+        | error;
 
 integerComa::= IDENTIFICADOR 
         | IDENTIFICADOR COMA integerComa 
-        | IDENTIFICADOR IGUAL 123 COMA integerComa 
+        | IDENTIFICADOR IGUAL reglaInteger COMA integerComa 
         | error;
 
 
-reglaInteger::= 
+reglaInteger::= ENTERO
+        | ENTERO SUMA NUMERO
+        | ENTERO SUMA CADENA
+        | ENTERO SUMA DECIMAL
+        | ENTERO SUMA CHARS
+        | ENTERO SUMA bool
+        | ENTERO SUMA IDENTIFICADOR
+        | ENTERO RESTA NUMERO
+        | ENTERO RESTA DECIMAL
+        | ENTERO RESTA CHARS
+        | ENTERO RESTA bool
+        | ENTERO RESTA IDENTIFICADOR
+        | ENTERO MULTIPLICACION NUMERO
+        | ENTERO MULTIPLICACION DECIMAL
+        | ENTERO MULTIPLICACION CHARS
+        | ENTERO MULTIPLICACION bool
+        | ENTERO MULTIPLICACION IDENTIFICADOR
+        | ENTERO DIVISION INTEGER
+        | ENTERO DIVISION DECIMAL
+        | ENTERO DIVISION CHARS
+        | ENTERO DIVISION bool
+        | ENTERO DIVISION IDENTIFICADOR
+        | error;
 
 
 bool::= TRUE
@@ -370,8 +470,6 @@ parametros_H1 ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
                 | error;
 
 
-
-
 paramsButton ::=    /* vacío */ 
                 |CORCHETE_IZQ parametros_Button CORCHETE_DER
                 | paramsButton CORCHETE_IZQ parametros_Button CORCHETE_DER;
@@ -382,7 +480,8 @@ parametros_Button ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
                 | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
                 | COLOR IGUAL COMILLAS colors COMILLAS
                 | BACKGROUND IGUAL COMILLAS colors COMILLAS
-                | ONCLICK IGUAL COMILLAS 123 COMILLAS
+                | ONCLICK IGUAL COMILLAS funcion COMILLAS
+                | ONCLICK IGUAL COMILLAS on_load COMILLAS
                 | error;
 
 
@@ -452,53 +551,61 @@ parametros_input ::= TYPE IGUAL COMILLAS type_input COMILLAS
                 | COLOR IGUAL COMILLAS colors COMILLAS
                 | error;
 
-type_input ::= TEXT
-                | NUMBER
-                | RADIO
-                | CHECKBOX
+type_input ::= TEXT         {: RESULT = "text"; :}
+                | NUMBER    {: RESULT = "number"; :}
+                | RADIO     {: RESULT = "radio"; :}
+                | CHECKBOX  {: RESULT = "checkbox"; :}
                 | error;
 
-paramsSpam ::=    /* vacío */ 
-                |CORCHETE_IZQ parametros_spam CORCHETE_DER
-                | paramsSpam CORCHETE_IZQ parametros_spam CORCHETE_DER;
+paramsSpam ::=    /* vacío */  {: RESULT = ""; :}
+                | CORCHETE_IZQ parametros_spam:params CORCHETE_DER  {: RESULT = params; :}
+                | paramsSpam:prev CORCHETE_IZQ parametros_spam:params CORCHETE_DER {: RESULT = prev + " " + params; :};
 
-parametros_spam ::= COLOR IGUAL COMILLAS colors COMILLAS
-                | FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
-                | FONT_FAMI IGUAL COMILLAS font COMILLAS
-                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
-                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
+parametros_spam ::= COLOR IGUAL COMILLAS colors:col COMILLAS    {: RESULT = " color: \" "+ col        +"  \" "  ;:}       
+                | FONT_SIZE IGUAL COMILLAS PIXEL:pix COMILLAS   {: RESULT = " font-size:\" "+ pix   +"; \" "  ;:}        
+                | FONT_FAMI IGUAL COMILLAS font:fon COMILLAS    {: RESULT = " font-family:\" "+ fon +"; \" "  ;:}       
+                | TEXT_ALIGN IGUAL COMILLAS align:ali COMILLAS  {: RESULT = " text-align:\" "+ ali  +"; \" "  ;:}         
+                | ID IGUAL COMILLAS IDENTIFICADOR:ide COMILLAS  {: RESULT = " id = \" "+ ide +" \" "  ;:}         
                 | error;
 
-align ::= LEFT 
-        | RIGHT
-        | CENTER
-        | JUSTITY
+colors ::= BLACK       :black     {: RESULT =black ; :}         
+            | OLIVE    :olive     {: RESULT =olive ; :}            
+            | TEAL     :teal      {: RESULT =teal ; :}          
+            | RED      :red       {: RESULT =red ; :}         
+            | BLUE     :blue      {: RESULT =blue ; :}          
+            | MARRON   :marron    {: RESULT ="brown" ; :}            
+            | NAVY     :navy      {: RESULT =navy ; :}          
+            | GRAY     :gray      {: RESULT =gray ; :}          
+            | LIME     :lime      {: RESULT =lime ; :}          
+            | FUCHSIA  :fuchsia   {: RESULT =fuchsia ; :}             
+            | GREEN    :green     {: RESULT =green ; :}           
+            | WHITE    :white     {: RESULT =white ; :}           
+            | PURPLE   :purple    {: RESULT =purple ; :}            
+            | SILVER   :silver    {: RESULT =silver ; :}            
+            | YELLOW   :yellow    {: RESULT =yellow ; :}            
+            | AQUA     :aqua      {: RESULT =aqua ; :}          
+            | HEXADECIMAL:hexa    {: RESULT =hexa ; :}                 
+            | error;    
+
+align ::= LEFT      :lef  {RESULT= lef; :}     
+        | RIGHT     :rig  {RESULT= rig; :}           
+        | CENTER    :cen  {RESULT= cen; :}            
+        | JUSTIFY   :jus  {RESULT= jus; :}             
         | error;
 
 
-font ::= COURIER
-        | VERDANA
-        | ARIAL
-        | GENEVA
-        | SANS_SERIF
+font ::= COURIER        :cou  {: RESULT= cou ; :}         
+        | VERDANA       :ver  {: RESULT= ver ; :}         
+        | ARIAL         :ari  {: RESULT= ari ; :}       
+        | GENEVA        :gen  {: RESULT= gen ; :}        
+        | SANS_SERIF    :san  {: RESULT= san ; :}            
         | error;
                 
-colors ::= BLACK
-            | OLIVE
-            | TEAL
-            | RED
-            | BLUE
-            | MARRON
-            | NAVY
-            | GRAY
-            | LIME
-            | FUCHSIA
-            | GREEN
-            | WHITE
-            | PURPLE
-            | SILVER
-            | YELLOW
-            | AQUA
-            | HEXADECIMAL
-            | error;
+
+
+
+
+
+
+
 

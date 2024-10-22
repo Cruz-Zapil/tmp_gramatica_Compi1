@@ -7,7 +7,6 @@ import java_cup.runtime.Symbol;
 %class LexerCC
 %cup
 %unicode
-%ignorecase
 
 
 %init{ 
@@ -135,7 +134,7 @@ import java_cup.runtime.Symbol;
 "left"               {yychar+=4   ;  System.out.println(yytext()); return new Symbol(symbol.LEFT          ,  yyline , (int)yychar, yytext() ); }              
 "right"              {yychar+=5   ;  System.out.println(yytext()); return new Symbol(symbol.RIGHT         ,  yyline , (int)yychar, yytext() ); }              
 "center"             {yychar+=6   ;  System.out.println(yytext()); return new Symbol(symbol.CENTER        ,  yyline , (int)yychar, yytext() ); }                
-"justify"            {yychar+=7   ;  System.out.println(yytext()); return new Symbol(symbol.JUSTITY       ,  yyline , (int)yychar, yytext() ); }                 
+"justify"            {yychar+=7   ;  System.out.println(yytext()); return new Symbol(symbol.JUSTIFY       ,  yyline , (int)yychar, yytext() ); }                 
                    
 "type"               {yychar+=4   ;  System.out.println(yytext()); return new Symbol(symbol.TYPE          ,  yyline , (int)yychar, yytext() ); }              
 // solo se usa en el input  
@@ -257,7 +256,7 @@ import java_cup.runtime.Symbol;
 ^[-+]?[0-9]{1,4}                   {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println(yytext());       return new Symbol(symbol.ENTERO       , yyline  ,  (int)yychar, yytext() ); }
 ^[-+]?(0|[1-9][0-9]*)\.[0-9]{1,4}  {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println(yytext());       return new Symbol(symbol.DECIMAL      , yyline  ,  (int)yychar, yytext() ); }
 
-
+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\?\!\+\-\*\/\=\(\)\.,;:\s]+ {longitudToken = yytext().length(); yychar+=longitudToken; System.out.println(yytext()); return new Symbol(symbol.TEXT, yyline, (int)yychar, yytext() ); }
 "!!"[^\n]*           {longitudToken = yytext().length(); yychar+=longitudToken; }
 "<!--"(.|\n)*?"-->"  {longitudToken = yytext().length(); yychar+=longitudToken; }
 "\n"                 {yychar=0; yyline=+1;}
@@ -267,8 +266,9 @@ import java_cup.runtime.Symbol;
 
 [a-zA-Z][a-zA-Z0-9_]*             {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println(yytext());       return new Symbol(symbol.IDENTIFICADOR, yyline  ,  (int)yychar, yytext() ); }
 
-                                
-[^]   {
+
+
+[^]+   {
  longitudToken = yytext().length(); yychar+=longitudToken; 
  System.out.println("Error de carácter: "+ yytext());
 //ReporteError.agregarError(new Error("Lexico", yytext(), "Caracter no reconocido"+ yytext(), yyline, (int)yychar));
