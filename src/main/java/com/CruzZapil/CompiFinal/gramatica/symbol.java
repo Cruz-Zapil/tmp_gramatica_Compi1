@@ -140,6 +140,7 @@ public interface symbol {
   public static final int MULTIPLICACION = 133;
   public static final int CORCHETE_IZQ = 5;
   public static final int OLIVE = 46;
+  public static final int URL = 152;
   public static final int LIME = 53;
   public static final int VERDANA = 67;
   public static final int COMA = 132;
@@ -312,7 +313,8 @@ public interface symbol {
   "COLUMN",
   "GLOBAL",
   "CHARS",
-  "VALUE"
+  "VALUE",
+  "URL"
   };
 }
 

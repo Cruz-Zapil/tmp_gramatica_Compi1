@@ -9,6 +9,9 @@ import java_cup.runtime.Symbol;
 %unicode
 
 
+TEXTS = [a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\?\¿\+\-\*\(\)\.,;: \t]+
+division = ["/"]
+
 %init{ 
     yyline = 1; 
     yychar = 1; 
@@ -38,12 +41,14 @@ import java_cup.runtime.Symbol;
 %%
 /* Definición de patrones y tokens */
 
+
+[" "]+                  {longitudToken = yytext().length();   yychar+=longitudToken  ;  }
 /*   
 +++++++++++++++++++++++++++++++++++++++
 ++++++++++++ ETIQUETAS CC +++++++++++++
 +++++++++++++++++++++++++++++++++++++++
 */    
-("\"")[^]*("\"")     {longitudToken = yytext().length();   yychar+=longitudToken  ; System.out.println(yytext());  return new Symbol(symbol.CADENA         ,  yyline , (int)yychar, yytext() ); }
+
 ("\'")[^]("\'")      {longitudToken = yytext().length();   yychar+=longitudToken  ; System.out.println(yytext());  return new Symbol(symbol.CHARS           ,  yyline , (int)yychar, yytext() ); }
 ("\'")               {yychar+=1  ; System.out.println(yytext());  return new Symbol(symbol.COMILLA_SIMPLE ,  yyline , (int)yychar, yytext() ); }
 ("\"")               {yychar+=1  ; System.out.println(yytext());  return new Symbol(symbol.COMILLAS       ,  yyline , (int)yychar, yytext() ); }
@@ -63,7 +68,7 @@ import java_cup.runtime.Symbol;
 "/C_BODY"            {yychar+=7  ; System.out.println(yytext());  return new Symbol(symbol.BODY_C         ,  yyline , (int)yychar, yytext() ); }  
 "C_TITLE"            {yychar+=7  ; System.out.println(yytext());  return new Symbol(symbol.TITLE          ,  yyline , (int)yychar, yytext() ); }
 "/C_TITLE"           {yychar+=8  ; System.out.println(yytext());  return new Symbol(symbol.TITLE_C        ,  yyline , (int)yychar, yytext() ); }
-"C_LINK"             {yychar+=6  ; System.out.println(yytext());  return new Symbol(symbol.LINK           ,  yyline , (int)yychar, yytext() ); }
+"C_LINK"             {yychar+=6  ; System.out.println("link " + yytext());  return new Symbol(symbol.LINK           ,  yyline , (int)yychar, yytext() ); }
 "/C_LINK"            {yychar+=7  ; System.out.println(yytext());  return new Symbol(symbol.LINK_C         ,  yyline , (int)yychar, yytext() ); }
 "C_BODY"             {yychar+=6  ; System.out.println(yytext());  return new Symbol(symbol.BODY           ,  yyline , (int)yychar, yytext() ); }
 "/C_BODY"            {yychar+=7  ; System.out.println(yytext());  return new Symbol(symbol.BODY_C         ,  yyline , (int)yychar, yytext() ); }
@@ -206,7 +211,7 @@ import java_cup.runtime.Symbol;
 "+"                  {yychar+=1   ;  System.out.println(yytext()); return new Symbol(symbol.SUMA          ,  yyline , (int)yychar, yytext() ); }                                                                                                               
 "-"                  {yychar+=1   ;  System.out.println(yytext()); return new Symbol(symbol.RESTA         ,  yyline , (int)yychar, yytext() ); }                                                                                                               
 "*"                  {yychar+=1   ;  System.out.println(yytext()); return new Symbol(symbol.PLUS          ,  yyline , (int)yychar, yytext() ); }                                                                                                               
-"/"                  {yychar+=1   ;  System.out.println(yytext()); return new Symbol(symbol.DIVISION      ,  yyline , (int)yychar, yytext() ); }   
+{division}           {yychar+=1   ;  System.out.println(yytext()); return new Symbol(symbol.DIVISION      ,  yyline , (int)yychar, yytext() ); }   
 
 /*   
 +++++++++++++++++++++++++++++++++++++++
@@ -252,23 +257,24 @@ import java_cup.runtime.Symbol;
 "false"              {yychar+=5   ;  System.out.println(yytext()); return new Symbol(symbol.FALSE         ,  yyline , (int)yychar, yytext() ); }
 
 "FUNTION_"[a-zA-Z0-9]*"()"         {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println(yytext());       return new Symbol(symbol.FUNTION      , yyline  ,  (int)yychar, yytext() ); }
+["\n"]               {yychar=0; yyline=+1;}
+"!!"[^\n]*           {longitudToken = yytext().length(); yychar+=longitudToken; }
+"<!--"([^])*"-->"    {longitudToken = yytext().length(); yychar+=longitudToken; }
+
+{TEXTS}{division}{division}{TEXTS}({TEXTS}{division}{TEXTS})*               {longitudToken = yytext().length(); yychar+=longitudToken; System.out.println(" url "+yytext()); return new Symbol(symbol.URL, yyline, (int)yychar, yytext() ); }
+
+
 [1-9][0-9]*                        {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println(yytext());       return new Symbol(symbol.NUMERO       , yyline  ,  (int)yychar, yytext() ); }
 ^[-+]?[0-9]{1,4}                   {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println(yytext());       return new Symbol(symbol.ENTERO       , yyline  ,  (int)yychar, yytext() ); }
 ^[-+]?(0|[1-9][0-9]*)\.[0-9]{1,4}  {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println(yytext());       return new Symbol(symbol.DECIMAL      , yyline  ,  (int)yychar, yytext() ); }
 
-[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\?\!\+\-\*\/\=\(\)\.,;:\s]+ {longitudToken = yytext().length(); yychar+=longitudToken; System.out.println(yytext()); return new Symbol(symbol.TEXT, yyline, (int)yychar, yytext() ); }
-"!!"[^\n]*           {longitudToken = yytext().length(); yychar+=longitudToken; }
-"<!--"(.|\n)*?"-->"  {longitudToken = yytext().length(); yychar+=longitudToken; }
-"\n"                 {yychar=0; yyline=+1;}
-" "                  {yychar=+1;}
+{TEXTS}                      {longitudToken = yytext().length(); yychar+=longitudToken; System.out.println(" txt "+yytext()); return new Symbol(symbol.TEXT, yyline, (int)yychar, yytext() ); }
+
+[a-zA-Z][a-zA-Z0-9_]*              {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println("id " +yytext());       return new Symbol(symbol.IDENTIFICADOR, yyline  ,  (int)yychar, yytext() ); }
 
 
 
-[a-zA-Z][a-zA-Z0-9_]*             {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println(yytext());       return new Symbol(symbol.IDENTIFICADOR, yyline  ,  (int)yychar, yytext() ); }
-
-
-
-[^]+   {
+[^]   {
  longitudToken = yytext().length(); yychar+=longitudToken; 
  System.out.println("Error de carácter: "+ yytext());
 //ReporteError.agregarError(new Error("Lexico", yytext(), "Caracter no reconocido"+ yytext(), yyline, (int)yychar));

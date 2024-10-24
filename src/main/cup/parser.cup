@@ -2,6 +2,8 @@ package com.zapil.app;
 import java_cup.runtime.*;
 import java.util.*;
 
+import com.CruzZapil.CompiFinal.model.Captcha;
+import com.CruzZapil.CompiFinal.model.etiqueta.Etiqueta;
 
 parser code{: 
 
@@ -30,7 +32,7 @@ parser code{:
 
     /// lista de etiqueta
 
-        private ArrayList<Etiqueta> listaEtiqueta = new List<Etiqueta>();
+        private ArrayList<Etiqueta> listaEtiqueta = new ArrayList<Etiqueta>();
 
          public ArrayList<Etiqueta> getListEtiqueta(){
           return listaEtiqueta;
@@ -93,10 +95,9 @@ terminal SCRIPTING, SCRIPTING_C, ON_LOAD, INTEGER, DECIMAL, BOOLEAN, CHAR, STRIN
 terminal LETIMPAR_NUM, REVERSE, CARACTER_RAMD, NUM_ALEATORIO, ALERT_INFO, EXIT, REDIRECT, INIT, IF, THEN, END, ELSE, REPEAT, HUNTIL, INSERT, WHILE, THENWHILE;
 terminal PAREN_IZQ, PAREN_DER, COMA, MULTIPLICACION, OPERADOR_ARITMETICO, OPERADOR_RELACIONAL, OPERADOR_LOGICO;
 
-
-terminal FUNTION, COMILLA_SIMPLE, DOS_PUNTOS, CADENA, TRUE, FALSE, ENTERO, PUNTO_COMA, IDENTIFICADOR, NUMERO, ROW, COLUMN, GLOBAL;
-terminal CHARS, VALUE;
-
+terminal FUNTION, COMILLA_SIMPLE, DOS_PUNTOS, TRUE, FALSE, ENTERO, PUNTO_COMA, IDENTIFICADOR, NUMERO, ROW, COLUMN, GLOBAL;
+terminal CHARS, VALUE, URL;
+ 
 non terminal iniciar, body, colors, font, align, etiqueta, etiq, paramsSpam, parametros_spam;
 non terminal clase, script, options, insert;
 non terminal funcion, on_load, background;
@@ -111,34 +112,40 @@ non terminal sentenciaIf, clicloRepeat, cicloWhile, sentencia_else_if, sentencia
 
 
 iniciar ::=MENOR HTML CORCHETE_IZQ ID IGUAL COMILLAS IDENTIFICADOR:id COMILLAS CORCHETE_DER
-        CORCHETE_IZQ NAME IGUAL COMILLAS CADENA:nombre COMILLAS CORCHETE_DER MAYOR  
-        head:he
-        link:li
-        title:ti
-        body:bo
-
-        MENOR HTML_C MAYOR
+        CORCHETE_IZQ NAME IGUAL COMILLAS TEXT:nombre COMILLAS CORCHETE_DER MAYOR  
+        head:he 
+        body:bo MENOR HTML_C MAYOR
 
 {:      // Crear el objeto Captcha con los datos recopilados
-       captcha  = new Captcha(id, nombre, he, li, ti, bo.background, bo.etiquetas);
+
+        
+         captcha  = new Captcha((String) id, (String) nombre, (ArrayList<Etiqueta>) he, BodyContent bo);
+    
+
     
 :};
  
-head::= MENOR HEAD MAYOR  MENOR  MENOR HEAD_C MAYOR
+head::= MENOR HEAD MAYOR link:li title:ti  MENOR HEAD_C MAYOR
         {:  
-        RESULT = "head " ;
+
+        // Crear un objeto para almacenar el contenido del head
+        List<Etiqueta> headContent = new ArrayList<>();
+        headContent.add((Etiqueta) li);
+        headContent.add((Etiqueta) ti);
+        RESULT = (ArrayList<Etiqueta>) headContent;
+
         :};
 
-link::= LINK CORCHETE_IZQ HREF IGUAL COMILLAS CADENA:txt COMILLAS CORCHETE_DER MAYOR  MENOR LINK_C MAYOR
+link::= MENOR LINK CORCHETE_IZQ HREF IGUAL COMILLAS URL:ur COMILLAS CORCHETE_DER MAYOR  MENOR LINK_C MAYOR
     {:  
-        
-        RESULT = txt;
+    String parametro = "href=\""+ur+"\"";
+        RESULT = new Etiqueta("link", parametro, null);
     :};
 
-title::= MENOR TITLE MAYOR CADENA:txt MENOR TITLE_C MAYOR   
+title::= MENOR TITLE MAYOR TEXT:txt MENOR TITLE_C MAYOR   
         {:  
         // Guardar el texto del título
-        RESULT = txt;
+        RESULT = new Etiqueta("title", null, (String) txt);
     :};
 
 body::= MENOR BODY background:bg MAYOR etiq:eti MENOR BODY_C MAYOR 
@@ -151,7 +158,7 @@ body::= MENOR BODY background:bg MAYOR etiq:eti MENOR BODY_C MAYOR
     :};
         
 background ::=  CORCHETE_IZQ BACKGROUND IGUAL COMILLAS colors:col COMILLAS CORCHETE_DER {: RESULT=" background-color: \" "+ col+"  \" ;"  ;  :}
-                |/* vacio */ {: RESULT="" :};
+                |/* vacio */ {: RESULT=""; :};
 
 etiq ::=   etiqueta :e 
         {: 
@@ -163,7 +170,15 @@ etiq ::=   etiqueta :e
         :}
         | etiq:e1 etiqueta:e2 {:
 
-        e1.add((Etiqueta) e2); 
+                 // Inicializar la lista si es nula
+         if (e1 == null) {
+             e1 = new ArrayList<>();
+         }
+
+         // Verificar si e2 es una instancia de Etiqueta antes de agregarla a la lista
+         if (e2 instanceof Etiqueta) {
+             ((ArrayList<Etiqueta>) e1).add((Etiqueta) e2);
+         }
         RESULT = e1; 
 
         :}
@@ -216,7 +231,15 @@ opt ::= options:o
          lista.add((Etiqueta)o);
          RESULT = lista;
          :}
-        |opt:prev options:o {: prev.add(o);   RESULT = prev;  :};
+        |opt:prev options:o {:
+        
+                 // Verificar si e2 es una instancia de Etiqueta antes de agregarla a la lista
+         if (o instanceof Etiqueta) {
+             ((ArrayList<Etiqueta>) prev).add((Etiqueta) o);
+         }
+        
+         
+           RESULT = prev;  :};
 
 options ::=  MENOR OPTION VALUE IGUAL COMILLAS TEXT:txt COMILLAS MAYOR  
         {: 

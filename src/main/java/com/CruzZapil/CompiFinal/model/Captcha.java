@@ -2,6 +2,7 @@ package com.CruzZapil.CompiFinal.model;
 
 import java.util.List;
 
+import com.CruzZapil.CompiFinal.gramatica.BodyContent;
 import com.CruzZapil.CompiFinal.model.etiqueta.Etiqueta;
 import com.google.gson.annotations.SerializedName;
 
@@ -12,25 +13,27 @@ public class Captcha {
     @SerializedName("NOMBRE")
     private String nombre;
     @SerializedName("HEAD")
-    private String head;
-    @SerializedName("LINK")
-    private String link;
-    @SerializedName("TITLE")
-    private String titulo;
+    private List<Etiqueta> etiquetaHead;
     @SerializedName("BODY")
-    private List<Etiqueta> etiqueta;
- 
+    private BodyContent etiqueta;
 
-    public Captcha(String id, String nombre, String head, String link, String titulo,
-            List<Etiqueta> etiqueta) {
+    public Captcha(String id, String nombre, List<Etiqueta> etiquetaHead,
+            BodyContent bo) {
 
         this.id = id;
         this.nombre = nombre;
-        this.head = head;
-        this.link = link;
-        this.titulo = titulo;
-        this.etiqueta = etiqueta;
+        this.etiquetaHead = etiquetaHead;
 
+        this.etiqueta = bo;
+
+    }
+
+    public List<Etiqueta> getEtiquetaHead() {
+        return etiquetaHead;
+    }
+
+    public void setEtiquetaHead(List<Etiqueta> etiquetaHead) {
+        this.etiquetaHead = etiquetaHead;
     }
 
     public String getId() {
@@ -49,43 +52,17 @@ public class Captcha {
         this.nombre = nombre;
     }
 
-    public String getHead() {
-        return head;
-    }
-
-    public void setHead(String head) {
-        this.head = head;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public List<Etiqueta> getEtiqueta() {
+    public BodyContent getEtiqueta() {
         return etiqueta;
     }
 
-    public void setEtiqueta(List<Etiqueta> etiqueta) {
+    public void setEtiqueta(BodyContent etiqueta) {
         this.etiqueta = etiqueta;
     }
 
     @Override
     public String toString() {
-        return "Captcha [etiqueta=" + etiqueta + ", head=" + head + ", id=" + id + ", link=" + link + ", nombre=" + nombre
-                + ", titulo=" + titulo + "]";
+        return "Captcha [etiqueta=" + etiqueta + ", etiquetaHead=" + etiquetaHead + ", id=" + id + ", nombre=" + nombre
+                + "]";
     }
-
-
 }
