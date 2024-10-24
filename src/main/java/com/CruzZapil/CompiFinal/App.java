@@ -40,38 +40,11 @@ public class App
 "    !! Información de la operación a resolver en el captcha\n" +
 "    <C_SPAM [id= \"mostrar_1\"] [text-align= \"center\"] [color= \"#3366ff\"] > ¿ Qué resultado genera la operación siguiente: 5+5 ?</C_SPAM>\n" +
 "    !! Input para la Respuesta del usuario generado con un scripting\n" +
-"    <C_SCRIPTING>\n" +
-"        ON_LOAD () [\n" +
-"            !! Estas instrucciones se ejecutan media vez se entra al scripting\n" +
-"            !! Insertamos el input con sus parámetros con la instrucción INSERT\n" +
-"            INSERT('<C_INPUT [type= \"text\"] [text-align= \"center\"] [id= \"entrada_1\"] >');\n" +
-"            INSERT('</C_INPUT>');\n" +
-"        ]\n" +
-"    </C_SCRIPTING>\n" +
+
 "    !! Boton que llama a la funcionalidad calc\n" +
 "    <C_BUTTON [id= \"boton_1\"] [onclick= \"FUNCTION_calc()\"] [background=\"green\"]> Procesar...</C_BUTTON>\n" +
 "    !! Scripting para la función calc\n" +
-"    <C_SCRIPTING>\n" +
-"        FUNCTION_calc() [\n" +
-"            !! Estas instrucciones no se ejecutan hasta llamar a FUNCTION_calc()\n" +
-"            integer @global contador_fallas = 5;\n" +
-"            string result_caja_texto = getElemenById('entrada_1');\n" +
-"            string result = \"10\";\n" +
-"            string mensaje_fallo = \"El captcha no fue validado intente otra vez\";\n" +
-"            string mensaje_acierto = \"El captcha fue validado\";\n" +
-"            string mensaje_final = \"El captcha no logró ser validado :( intente más tarde\";\n" +
-"            !! Validación del número de oportunidades restantes\n" +
-"            IF (contador_fallas == 0) THEN\n" +
-"                INIT {: ALERT_INFO(mensaje_final); EXIT(); :} END\n" +
-"            !! Validación de fallas y aciertos\n" +
-"            IF (result_caja_texto == result) THEN\n" +
-"                !! Si el resultado es correcto\n" +
-"                INIT {: ALERT_INFO(mensaje_acierto); REDIRECT(); :} END\n" +
-"            ELSE\n" +
-"                !! Si el intento es incorrecto\n" +
-"                INIT {: ALERT_INFO(mensaje_fallo); contador_fallas = contador_fallas - 1; :} END\n" +
-"        ]\n" +
-"    </C_SCRIPTING>\n" +
+
 "</C_BODY>\n" +
 "</C_CC>\n" +
 "!! Fin de estructura CC";
@@ -80,34 +53,21 @@ public class App
 
         // Pasa la cadena al lexer
         StringReader reader = new StringReader(prueva);
-      //  LexerCC lexer = new LexerCC(reader);
+       LexerCC lexer = new LexerCC(reader);
+        parser parser = new parser(lexer);
+        parser.parse();
+
 
         // Procesa los tokens
-
+        parser.getCaptcha().toString();
         
-        String input = "C_CC \"Hola Mundo\" true 123 3.14 C_TITLE";
-     
-        
-        // Crear el lexer usando un StringReader
-        Reader reader1 = new StringReader(prueva);
-
-        LexerCC lexer = new LexerCC(reader1);
+  
+      
+      //  LexerCC lexer = new LexerCC(reader1);
     
      
 
 
-        try {
-            // Leer cada token utilizando el método yylex()
-            Symbol sym  ;
-            while ((sym = lexer.next_token()  ) != null) {
-                // Imprimir el tipo de token y el valor
-               
-         
-           
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
 
     }

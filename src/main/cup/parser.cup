@@ -19,66 +19,218 @@ parser code{:
         System.out.println("Error síntactico irrecuperable en la Línea " + 
         (s.left)+ " Columna "+s.right+". Componente " + s.value + " no reconocido.");
 
-    } 
+    }
+
+   // para el objeto captcha
+        private Captcha captcha;
+
+        public Captcha getCaptcha(){
+            return captcha;
+        }
+
+    /// lista de etiqueta
+
+        private ArrayList<Etiqueta> listaEtiqueta = new List<Etiqueta>();
+
+         public ArrayList<Etiqueta> getListEtiqueta(){
+          return listaEtiqueta;
+         }
 
 
+
+
+
+
+                 /// funcion para distribuir los parametros de una etiqueta: 
+
+            public String separarAtributos(String paramsSpam) {
+
+            String finalResult = "";
+            StringBuilder attributesResult = new StringBuilder();
+            StringBuilder styleResult = new StringBuilder();
+
+            // Atributos específicos
+            String[] attributeNames = {"id", "src", "width", "height", "alt", "class", "cols", "rows", "type"};
+
+            // Buscar y separar los atributos específicos
+            for (String attr : attributeNames) {
+                int attrStart = paramsSpam.indexOf(attr + "=");
+                if (attrStart != -1) {
+                    // Encontrar el final del atributo (busca el punto y coma o el final de la cadena)
+                    int attrEnd = paramsSpam.indexOf(";", attrStart);
+                    if (attrEnd == -1) {
+                        attrEnd = paramsSpam.length();
+                    }
+
+                    // Extraer el atributo
+                    String attribute = paramsSpam.substring(attrStart, attrEnd).trim();
+                    attributesResult.append(attribute).append(" ");
+
+                    // Remover el atributo del string original
+                    paramsSpam = paramsSpam.replace(attribute + ";", "").trim();
+                }
+            }
+
+            // Cualquier cosa que quede en paramsSpam se considera como parte del estilo
+            if (!paramsSpam.isEmpty()) {
+                styleResult.append("style=\"").append(paramsSpam.trim()).append("\"");
+            }
+
+            // Combinar los resultados de los atributos y el estilo
+            finalResult = attributesResult.toString().trim() + " " + styleResult.toString().trim();
+
+            return finalResult.trim();
+        }
 
     :}
 
 
-terminal COMILLAS ,LLAVE_IZQ ,LLAVE_DER ,CORCHETE_IZQ ,CORCHETE_DER ,PAR_IZQ ,PAR_DER ,MENOR ,MAYOR, DOS_PUNTOS ,HTML ,HTML_C ,HEAD ,HEAD_C ,TITLE ,TITLE_C ,LINK ,LINK_C ,BODY ,BODY_C ,SPAM ,SPAN_C;
+terminal COMILLAS ,LLAVE_IZQ ,LLAVE_DER ,CORCHETE_IZQ ,CORCHETE_DER ,PAR_IZQ ,PAR_DER ,MENOR ,MAYOR ,HTML ,HTML_C ,HEAD ,HEAD_C ,TITLE ,TITLE_C ,LINK ,LINK_C ,BODY ,BODY_C ,SPAM ,SPAN_C;
 terminal INPUT, INPUT_C, TEXTOAREA, TEXTOAREA_C, SELECTED ,SELECTED_C ,OPTION ,OPTION_C ,DIV ,DIV_C ,IMG ,IMG_C ,BR ,BR_C ,BUTTON ,BUTTON_C ,H1 ,H1_C ,P ,P_C, HREF, BACKGROUND;
 terminal BLACK, OLIVE, TEAL, RED, BLUE, MARRON, NAVY, GRAY, LIME, FUCHSIA, GREEN, WHITE, PURPLE, SILVER, YELLOW, AQUA, HEXADECIMAL;
 terminal COLOR, FONT_SIZE, PIXEL, FONT_FAMI, COURIER, VERDANA, ARIAL, GENEVA, SANS_SERIF, TEXT_ALIGN, LEFT, RIGHT, CENTER, JUSTIFY, TYPE, TEXT, NUMBER, RADIO, CHECKBOX, ID, NAME, COLS, ROWS, CLASS, SRC, WIDTH, HEIGHT, ALT, ONCLICK;
 terminal SCRIPTING, SCRIPTING_C, ON_LOAD, INTEGER, DECIMAL, BOOLEAN, CHAR, STRING, COMPARACION, DESIGUALDAD, MENOR_IGUAL, MAYOR_IGUAL, OR, AND, NOT, IGUAL, SUMA, RESTA, PLUS, DIVISION,  ASC, DESC;
 terminal LETIMPAR_NUM, REVERSE, CARACTER_RAMD, NUM_ALEATORIO, ALERT_INFO, EXIT, REDIRECT, INIT, IF, THEN, END, ELSE, REPEAT, HUNTIL, INSERT, WHILE, THENWHILE;
+terminal PAREN_IZQ, PAREN_DER, COMA, MULTIPLICACION, OPERADOR_ARITMETICO, OPERADOR_RELACIONAL, OPERADOR_LOGICO;
 
-terminal FUNTION, COMILLA_SIMPLE, DOS_PUNTOS, CADENA, TRUE, FALSE, ENTERO, DECIMAL, PUNTO_COMA, IDENTIFICADOR, NUMERO, ROW, COLUMN, GLOBAL;
-terminal CHARS, TEXT;
+
+terminal FUNTION, COMILLA_SIMPLE, DOS_PUNTOS, CADENA, TRUE, FALSE, ENTERO, PUNTO_COMA, IDENTIFICADOR, NUMERO, ROW, COLUMN, GLOBAL;
+terminal CHARS, VALUE;
 
 non terminal iniciar, body, colors, font, align, etiqueta, etiq, paramsSpam, parametros_spam;
-non terminal paramsInput, parametros_input, type_input, paramsTextoArea, parametros_TextoArea, paramsSelect, parametros_Select, paramsDiv, parametros_Div, clase;
-non terminal paramsImg, parametros_Img, paramsButton, parametros_Button, paramsH1, parametros_H1, paramsP, parametros_P, script;
+non terminal clase, script, options, insert;
 non terminal funcion, on_load, background;
+non terminal head, link, title, lista_instrucciones, instruccion, condicion, condicion_relacional, condicion_logica, llamada_funcion_booleana;
+non terminal ciclo_repeat, inicializacion, condicion_limite, expresion_numerica, expresion_aritmetica, tipo_variable, lista_parametros, parametro;
+non terminal ciclo_while, expresion_booleana, bloque_instrucciones, instruccion_simple;
+non terminal declaracion, modo, charComa, reglaChar, decimalComa, reglaDecimal, booleanComa, reglaBoolean, stringComa, reglaString, integerComa, reglaInteger, bool, separarAtributos;
+non terminal paramsP, parametros_P, paramsH1, parametros_H1, paramsButton, parametros_Button, paramsImg, parametros_Img, paramsDiv, parametros_Div, paramsSelect, parametros_Select, paramsTextoArea, parametros_TextoArea, paramsInput, parametros_input;
+non terminal opt;
+
+non terminal sentenciaIf, clicloRepeat, cicloWhile, sentencia_else_if, sentencia_else, expresion, type_input;
 
 
-iniciar ::= MENOR HTML CORCHETE_IZQ ID IGUAL COMILLAS IDENTIFICADOR COMILLAS CORCHETE_DER CORCHETE_IZQ NAME IGUAL COMILLAS CADENA COMILLAS CORCHETE_DER MAYOR 
-        MENOR HEAD MAYOR  MENOR LINK CORCHETE_IZQ HREF IGUAL COMILLAS CADENA COMILLAS CORCHETE_DER MAYOR  MENOR LINK_C MAYOR MENOR TITLE MAYOR CADENA MENOR TITLE_C MAYOR MENOR HEAD_C MAYOR
-        MENOR BODY background MAYOR etiq MENOR BODY_C MAYOR MENOR HTML_C MAYOR;
+iniciar ::=MENOR HTML CORCHETE_IZQ ID IGUAL COMILLAS IDENTIFICADOR:id COMILLAS CORCHETE_DER
+        CORCHETE_IZQ NAME IGUAL COMILLAS CADENA:nombre COMILLAS CORCHETE_DER MAYOR  
+        head:he
+        link:li
+        title:ti
+        body:bo
 
-background ::= /* vacio */
-        | BACKGROUND IGUAL COMILLAS colors COMILLAS;
+        MENOR HTML_C MAYOR
 
+{:      // Crear el objeto Captcha con los datos recopilados
+       captcha  = new Captcha(id, nombre, he, li, ti, bo.background, bo.etiquetas);
+    
+:};
+ 
+head::= MENOR HEAD MAYOR  MENOR  MENOR HEAD_C MAYOR
+        {:  
+        RESULT = "head " ;
+        :};
 
-etiq ::=  /* vacio*/
-        | etiqueta 
-        | etiq etiqueta
-        | error;
+link::= LINK CORCHETE_IZQ HREF IGUAL COMILLAS CADENA:txt COMILLAS CORCHETE_DER MAYOR  MENOR LINK_C MAYOR
+    {:  
+        
+        RESULT = txt;
+    :};
 
-etiqueta ::= MENOR SPAM paramsSpam MAYOR TEXT:txt MENOR SPAN_C MAYOR               {: System.out.println(" SPAM: " + txt); :}  
-        | MENOR INPUT paramsInput  MAYOR  MENOR INPUT_C MAYOR                      {: System.out.println(" INPUT: " + ); :}
-        | MENOR TEXTOAREA paramsTextoArea MAYOR  MENOR TEXTOAREA_C MAYOR           {: System.out.println(" TEXTO_ AREA:  "  ); :}    
-        | MENOR SELECTED paramsSelect MAYOR options:opt MENOR SELECTED_C MAYOR     {: System.out.println(" SELECTED: " + opt ); :}        
-        | MENOR DIV parametros_Div MAYOR etiqueta MENOR DIV_C MAYOR                {: System.out.println(" DIV "  ); :} 
-        | MENOR IMG MAYOR paramsImg MENOR IMG_C:img MAYOR                          {: System.out.println(" IMG " + img ); :}     
-        | MENOR BR MAYOR                                                           {: System.out.println(" BR " ); :}     
-        | MENOR BUTTON paramsButton MAYOR TEXT:txt MENOR BUTTON_C MAYOR            {: System.out.println(" BUTTON " + txt ); :}  
-        | MENOR H1 paramsH1 MAYOR TEXT MENOR H1_C:h1 MAYOR                         {: System.out.println(" H1 " + h1); :}  
-        | MENOR P paramsP MAYOR TEXT:txt MENOR P_C MAYOR                           {: System.out.println(" P " + txt); :}       
-        | error;
+title::= MENOR TITLE MAYOR CADENA:txt MENOR TITLE_C MAYOR   
+        {:  
+        // Guardar el texto del título
+        RESULT = txt;
+    :};
 
-options ::=  MENOR OPTION VALUE IGUAL COMILLAS IDENTIFICADOR COMILLAS MAYOR
-        | MENOR OPTION VALUE IGUAL COMILLAS IDENTIFICADOR COMILLAS MAYOR options
-        | error;
+body::= MENOR BODY background:bg MAYOR etiq:eti MENOR BODY_C MAYOR 
+    {:  
+        // Crear un objeto para almacenar el contenido del body
+        BodyContent bodyContent = new BodyContent();
+        bodyContent.background = (String) bg;
+        bodyContent.etiquetas = (List<Etiqueta>) eti;
+        RESULT = bodyContent;
+    :};
+        
+background ::=  CORCHETE_IZQ BACKGROUND IGUAL COMILLAS colors:col COMILLAS CORCHETE_DER {: RESULT=" background-color: \" "+ col+"  \" ;"  ;  :}
+                |/* vacio */ {: RESULT="" :};
 
-script ::= /* vacio */
-        | MENOR SCRIPTING MAYOR FUNTION CORCHETE_IZQ funcion CORCHETE_DER MENOR SCRIPTING_C MAYOR
+etiq ::=   etiqueta :e 
+        {: 
+
+         List<Etiqueta> lista = new ArrayList<>();
+        lista.add((Etiqueta) e);
+        RESULT = lista; 
+
+        :}
+        | etiq:e1 etiqueta:e2 {:
+
+        e1.add((Etiqueta) e2); 
+        RESULT = e1; 
+
+        :}
+        | error  ;
+
+etiqueta ::= MENOR SPAM paramsSpam:params MAYOR TEXT:txt MENOR SPAN_C MAYOR               
+        {:  String parametro = separarAtributos((String) params)  ; RESULT= new Etiqueta("spam",(String) parametro ,(String) txt); :}  
+        | MENOR INPUT paramsInput:params MAYOR  MENOR INPUT_C MAYOR                      
+        {:  String parametro = separarAtributos((String) params) ;  RESULT= new Etiqueta ("input",(String) parametro ,null); :}
+        | MENOR TEXTOAREA paramsTextoArea:params MAYOR  MENOR TEXTOAREA_C MAYOR           
+        {:  String parametro = separarAtributos((String) params)  ; RESULT= new Etiqueta("textarea",(String) parametro ,null); :}    
+        | MENOR SELECTED paramsSelect:params MAYOR opt:ot MENOR SELECTED_C MAYOR     
+        {:  
+        
+                String parametro = separarAtributos((String) params); 
+                Etiqueta etiquetaSelect = new Etiqueta("select", parametro, null);
+                // Agregar todas las opciones como hijos de la etiqueta select
+                for (Etiqueta e : (List<Etiqueta>)  ot) {
+                    etiquetaSelect.agregarHijo(e);
+                }
+
+                RESULT = etiquetaSelect;
+
+         :}        
+        | MENOR DIV paramsDiv:params MAYOR etiq:contenido MENOR DIV_C MAYOR                
+        {: 
+         String parametro = separarAtributos((String) params)  ; 
+
+                Etiqueta etiquetaDiv = new Etiqueta("div",(String) parametro ,null);
+                      // Agregar todas las etiquetas hijas al div
+                for (Etiqueta e : (List<Etiqueta>)  contenido) {
+                    etiquetaDiv.agregarHijo(e);
+                }
+                RESULT = etiquetaDiv;
+         :}
+        | MENOR IMG MAYOR paramsImg:params MENOR IMG_C:img MAYOR                          
+        {:  String parametro = separarAtributos((String) params)  ; RESULT= new Etiqueta("img",(String) parametro ,(String) img); :}     
+        | MENOR BR MAYOR                                                           
+        {:  RESULT= new Etiqueta("br",null ,null); :}
+        | MENOR BUTTON paramsButton:params MAYOR TEXT:txt MENOR BUTTON_C MAYOR            
+        {:  String parametro = separarAtributos((String) params)  ; RESULT= new Etiqueta("button",(String) parametro ,(String) txt); :}  
+        | MENOR H1 paramsH1:params MAYOR TEXT:txt MENOR H1_C MAYOR                         
+        {:  String parametro = separarAtributos((String) params)  ; RESULT= new Etiqueta("h1",(String) parametro ,(String) txt ); :}  
+        | MENOR P paramsP:params MAYOR TEXT:txt MENOR P_C MAYOR                           
+        {:  String parametro = separarAtributos((String) params)  ; RESULT= new Etiqueta("p",(String) parametro , (String) txt); :};      
+
+opt ::= options:o 
+        {:   
+         List<Etiqueta> lista = new ArrayList<>();
+         lista.add((Etiqueta)o);
+         RESULT = lista;
+         :}
+        |opt:prev options:o {: prev.add(o);   RESULT = prev;  :};
+
+options ::=  MENOR OPTION VALUE IGUAL COMILLAS TEXT:txt COMILLAS MAYOR  
+        {: 
+        Etiqueta etiquetaOption = new Etiqueta("option",(String) txt,null );
+        RESULT = etiquetaOption;
+    :};
+
+/*
+script ::= MENOR SCRIPTING MAYOR FUNTION CORCHETE_IZQ funcion CORCHETE_DER MENOR SCRIPTING_C MAYOR
         | MENOR SCRIPTING MAYOR ON_LOAD CORCHETE_IZQ on_load CORCHETE_DER MENOR SCRIPTING_C MAYOR
         | error;
 
 
-funcion ::= /* vacio */
-        | declaracion
+funcion ::=  declaracion
         | sentenciaIf
         | clicloRepeat
         | cicloWhile
@@ -104,20 +256,20 @@ sentencia_else_if ::= ELSE IF PAREN_IZQ condicion PAREN_DER THEN bloque_instrucc
 
 sentencia_else ::= ELSE bloque_instrucciones;
 
-/* Producción para un bloque de instrucciones que comienza con INIT y termina con END */
+// Producción para un bloque de instrucciones que comienza con INIT y termina con END 
 bloque_instrucciones ::= INIT LLAVE_IZQ DOS_PUNTOS lista_instrucciones DOS_PUNTOS LLAVE_DER END
                        | lista_instrucciones; 
 
-/* Lista de instrucciones puede ser cero o más */
-lista_instrucciones ::= /* vacío */
-                      | lista_instrucciones 123;
+// Lista de instrucciones puede ser cero o más 
+lista_instrucciones ::= lista_instrucciones;
+                       
 
 
 
-/* Esta es una definición simplificada de una instrucción */
+// Esta es una definición simplificada de una instrucción 
 instruccion ::= IDENTIFICADOR PUNTO_COMA;
 
-/* Ejemplo de una expresión booleana */
+// Ejemplo de una expresión booleana 
 expresion_booleana ::= TRUE
                      | FALSE
                      | IDENTIFICADOR;
@@ -147,8 +299,7 @@ condicion_logica ::= condicion AND condicion
 llamada_funcion_booleana ::= IDENTIFICADOR PAR_IZQ lista_parametros PAR_DER;
 
 
-lista_parametros ::= /* vacío */
-                   | lista_parametros COMA expresion
+lista_parametros ::= lista_parametros COMA expresion
                    | expresion;
 
 
@@ -292,8 +443,8 @@ declaracion ::= INTEGER modo IDENTIFICADOR IGUAL ENTERO PUNTO_COMA
         | INTEGER modo IDENTIFICADOR PUNTO_COMA
         | INTEGER modo integerComa PUNTO_COMA
         | DECIMAL modo IDENTIFICADOR IGUAL DECIMAL PUNTO_COMA
-        | DECIMAL mdod  IDENTIFICADOR  PUNTO_COMA
-        | DECIMAL mdod decimalComa  PUNTO_COMA
+        | DECIMAL modo  IDENTIFICADOR  PUNTO_COMA
+        | DECIMAL modo decimalComa  PUNTO_COMA
         | BOOLEAN modo IDENTIFICADOR IGUAL bool PUNTO_COMA
         | BOOLEAN modo IDENTIFICADOR PUNTO_COMA
         | BOOLEAN modo booleanComa PUNTO_COMA
@@ -437,118 +588,115 @@ reglaInteger::= ENTERO
         | error;
 
 
-bool::= TRUE
-        |FALSE
+bool::= TRUE   {: RESULT = "true"; :}
+        |FALSE {: RESULT = "false"; :}
         | error;
 
-modo ::= /*vacio*/
-        | GLOBAL 
+modo ::= GLOBAL {: RESULT = "@global"; :}
         | error;
 
+*/
 
+paramsP ::= CORCHETE_IZQ parametros_P:params CORCHETE_DER {: RESULT = params; :}
+                | paramsP:prev CORCHETE_IZQ parametros_P:params CORCHETE_DER {: RESULT = prev + " " + params; :};
 
-paramsP ::=    /* vacío */ 
-                |CORCHETE_IZQ parametros_P CORCHETE_DER
-                | paramsP CORCHETE_IZQ parametros_P CORCHETE_DER;
-
-parametros_P ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
-                | FONT_FAMI IGUAL COMILLAS font COMILLAS
-                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
-                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
-                | COLOR IGUAL COMILLAS colors COMILLAS
+parametros_P ::= ID IGUAL COMILLAS IDENTIFICADOR:ide  COMILLAS   {: RESULT= "id=\""+ide+"\"";  :}
+                | FONT_SIZE IGUAL COMILLAS PIXEL:pix COMILLAS    {: RESULT= " font-size: \" "+ pix +"; \" "   ; :}      
+                | FONT_FAMI IGUAL COMILLAS font:fon COMILLAS     {: RESULT= " font-family: \" "+ fon +"; \" " ; :}      
+                | TEXT_ALIGN IGUAL COMILLAS align:ali COMILLAS   {: RESULT= " text-align: \" "+ ali  +"; \" " ; :}              
+                | COLOR IGUAL COMILLAS colors:col COMILLAS       {: RESULT= " color: \" "+ col+"  \" ;"  ; :}    
                 | error;
 
-paramsH1 ::=    /* vacío */ 
-                |CORCHETE_IZQ parametros_H1 CORCHETE_DER
-                | paramsH1 CORCHETE_IZQ parametros_H1 CORCHETE_DER;
+paramsH1 ::=    CORCHETE_IZQ parametros_H1:params CORCHETE_DER {: RESULT = params; :}
+                | paramsH1:prev CORCHETE_IZQ parametros_H1:params CORCHETE_DER {: RESULT = prev + " " + params; :};
 
-parametros_H1 ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
-                | FONT_FAMI IGUAL COMILLAS font COMILLAS
-                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
-                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
-                | COLOR IGUAL COMILLAS colors COMILLAS
-                | error;
-
-
-paramsButton ::=    /* vacío */ 
-                |CORCHETE_IZQ parametros_Button CORCHETE_DER
-                | paramsButton CORCHETE_IZQ parametros_Button CORCHETE_DER;
-
-parametros_Button ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
-                | FONT_FAMI IGUAL COMILLAS font COMILLAS
-                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
-                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
-                | COLOR IGUAL COMILLAS colors COMILLAS
-                | BACKGROUND IGUAL COMILLAS colors COMILLAS
-                | ONCLICK IGUAL COMILLAS funcion COMILLAS
-                | ONCLICK IGUAL COMILLAS on_load COMILLAS
+parametros_H1 ::= ID IGUAL COMILLAS IDENTIFICADOR:ide  COMILLAS   {: RESULT= "id=\""+ide+"\"";  :}
+                | FONT_SIZE IGUAL COMILLAS PIXEL:pix COMILLAS     {: RESULT= " font-size: \" "+ pix +"; \" "   ; :}         
+                | FONT_FAMI IGUAL COMILLAS font:fon COMILLAS      {: RESULT= " font-family: \" "+ fon +"; \" " ; :}        
+                | TEXT_ALIGN IGUAL COMILLAS align:ali COMILLAS    {: RESULT= " text-align: \" "+ ali  +"; \" " ; :}                  
+                | COLOR IGUAL COMILLAS colors:col COMILLAS        {: RESULT= " color: \" "+ col+"  \" ;"  ; :}      
                 | error;
 
 
-paramsImg ::=    /* vacío */ 
-                |CORCHETE_IZQ parametros_Img CORCHETE_DER
-                | paramsImg CORCHETE_IZQ parametros_Img CORCHETE_DER;
+paramsButton ::= CORCHETE_IZQ parametros_Button:params CORCHETE_DER {: RESULT = params; :}
+                | paramsButton:prev CORCHETE_IZQ parametros_Button:params CORCHETE_DER {: RESULT = prev + " " + params; :};
+               
 
-parametros_Img ::= SRC IGUAL COMILLAS CADENA COMILLAS
-                | WIDTH IGUAL COMILLAS NUMERO COMILLAS
-                | HEIGHT IGUAL COMILLAS NUMERO COMILLAS
-                | ALT IGUAL COMILLAS CADENA COMILLAS
-                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
+parametros_Button ::= ID IGUAL COMILLAS IDENTIFICADOR:ide  COMILLAS   {: RESULT= "id=\""+ide+"\"";  :}
+                | FONT_SIZE IGUAL COMILLAS PIXEL:pix COMILLAS     {: RESULT= " font-size: \" "+ pix +"; \" "   ; :}          
+                | FONT_FAMI IGUAL COMILLAS font:fon COMILLAS      {: RESULT= " font-family: \" "+ fon +"; \" " ;  :}     
+                | TEXT_ALIGN IGUAL COMILLAS align:ali COMILLAS    {: RESULT= " text-align: \" "+ ali  +"; \" " ;  :}           
+                | COLOR IGUAL COMILLAS colors:col COMILLAS        {: RESULT= " color: \" "+ col+"  \" ;"  ; :}   
+                | BACKGROUND IGUAL COMILLAS colors:bac COMILLAS   {: RESULT= " background-color: \" "+ bac+"  \" ;"  ;  :}        
+               // | ONCLICK IGUAL COMILLAS funcion: COMILLAS        {: RESULT=  :}      
+               // | ONCLICK IGUAL COMILLAS on_load: COMILLAS        {: RESULT=  :}     
                 | error;
 
-paramsDiv ::=    /* vacío */ 
-                |CORCHETE_IZQ parametros_Div CORCHETE_DER
-                | paramsDiv CORCHETE_IZQ parametros_Div CORCHETE_DER;
 
-parametros_Div ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
-                | FONT_FAMI IGUAL COMILLAS font COMILLAS
-                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
-                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
-                | CLASS IGUAL COMILLAS clase  COMILLAS
-                | COLOR IGUAL COMILLAS colors COMILLAS
-                | BACKGROUND IGUAL COMILLAS colors COMILLAS
+paramsImg ::=  CORCHETE_IZQ parametros_Img:params CORCHETE_DER {: RESULT = params; :}
+                | paramsImg:prev CORCHETE_IZQ parametros_Img:params CORCHETE_DER {: RESULT = prev + " " + params; :};
+             
+
+parametros_Img ::= ID IGUAL COMILLAS IDENTIFICADOR:ide COMILLAS  {: RESULT= "id=\""+ide+"\""; :}         
+                | SRC IGUAL COMILLAS TEXT:txt COMILLAS           {: RESULT= "src=\""+txt+"\""; :}    
+                | WIDTH IGUAL COMILLAS NUMERO:num COMILLAS       {: RESULT= "width=\""+num+"\""; :}       
+                | HEIGHT IGUAL COMILLAS NUMERO:num COMILLAS      {: RESULT= "height=\""+num+"\""; :}        
+                | ALT IGUAL COMILLAS TEXT:txt COMILLAS           {: RESULT= "alt=\""+txt+"\""; :}             
                 | error;
 
-clase ::= ROW
-        | COLUMN
+paramsDiv ::=   CORCHETE_IZQ parametros_Div:params CORCHETE_DER {: RESULT = params; :}
+                | paramsDiv:prev CORCHETE_IZQ parametros_Div:params CORCHETE_DER {: RESULT = prev + " " + params; :};
+              
+
+parametros_Div ::= ID IGUAL COMILLAS IDENTIFICADOR:ide  COMILLAS   {: RESULT= "id=\""+ide+"\"";  :}
+                | CLASS IGUAL COMILLAS clase:cls   COMILLAS        {: RESULT= "class=\""+cls+"\""; :}
+                | FONT_SIZE IGUAL COMILLAS PIXEL:pix  COMILLAS     {: RESULT= " font-size: \" "+ pix +"; \" "   ; :}           
+                | FONT_FAMI IGUAL COMILLAS font:fon  COMILLAS      {: RESULT= " font-family: \" "+ fon +"; \" " ; :}       
+                | TEXT_ALIGN IGUAL COMILLAS align:ali  COMILLAS    {: RESULT= " text-align: \" "+ ali  +"; \" " ; :}            
+                | COLOR IGUAL COMILLAS colors:col  COMILLAS        {: RESULT= " color: \" "+ col+"  \" ;"  ; :}     
+                | BACKGROUND IGUAL COMILLAS colors:col  COMILLAS   {: RESULT= " background-color: \" "+ col+"  \" ;"  ; :}          
+                | error;
+
+clase ::= ROW     {: RESULT= "row "; :}  
+        | COLUMN  {: RESULT= " col-1"; :} 
         | error;
 
 
-paramsSelect ::=    /* vacío */ 
-                |CORCHETE_IZQ parametros_Select CORCHETE_DER
-                | paramsSelect CORCHETE_IZQ parametros_Select CORCHETE_DER;
-
-parametros_Select ::= FONT_SIZE IGUAL COMILLAS PIXEL  COMILLAS
-                | FONT_FAMI IGUAL COMILLAS font COMILLAS
-                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
-                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
-                | COLOR IGUAL COMILLAS colors COMILLAS
+paramsSelect ::= CORCHETE_IZQ parametros_Select:params CORCHETE_DER  {: RESULT = params; :}
+                | paramsSelect:prev CORCHETE_IZQ parametros_Select:params CORCHETE_DER  {: RESULT = prev + " " + params; :};
+              
+ 
+parametros_Select ::= ID IGUAL COMILLAS IDENTIFICADOR:ide   COMILLAS  {: RESULT= "id=\""+ide+"\"";  :} 
+                | FONT_SIZE IGUAL COMILLAS PIXEL :pix   COMILLAS      {: RESULT= " font-size: \" "+ pix +"; \" "   ; :}         
+                | FONT_FAMI IGUAL COMILLAS font:fon   COMILLAS        {: RESULT= " font-family: \" "+ fon +"; \" " ; :}   
+                | TEXT_ALIGN IGUAL COMILLAS align:ali   COMILLAS      {: RESULT= " text-align: \" "+ ali  +"; \" " ; :}     
+                | COLOR IGUAL COMILLAS colors:col   COMILLAS          {: RESULT= " color: \" "+ col+"  \" ;"  ; :} 
                 | error;
 
 
-paramsTextoArea ::=   /* vacío */ 
-                |CORCHETE_IZQ parametros_TextoArea CORCHETE_DER
-                | paramsTextoArea CORCHETE_IZQ parametros_TextoArea CORCHETE_DER;
+paramsTextoArea ::= CORCHETE_IZQ parametros_TextoArea:params CORCHETE_DER {: RESULT = params; :}
+                | paramsTextoArea:prev CORCHETE_IZQ parametros_TextoArea:params CORCHETE_DER {: RESULT = prev + " " + params; :};
+                
 
-parametros_TextoArea ::= FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS 
-                        | FONT_FAMI IGUAL COMILLAS font COMILLAS
-                        | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
-                        | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS 
-                        | COLS IGUAL COMILLAS NUMERO COMILLAS 
-                        | ROWS IGUAL COMILLAS NUMERO COMILLAS
+parametros_TextoArea ::= FONT_SIZE IGUAL COMILLAS PIXEL:pix COMILLAS   {: RESULT = " font-size: \" "+ pix +"; \" "   ; :}     
+                        | FONT_FAMI IGUAL COMILLAS font:fon COMILLAS   {: RESULT = " font-family: \" "+ fon +"; \" " ; :}    
+                        | TEXT_ALIGN IGUAL COMILLAS align:ali COMILLAS {: RESULT = " text-align: \" "+ ali  +"; \" " ; :}      
+                        | ID IGUAL COMILLAS IDENTIFICADOR:ide COMILLAS {: RESULT = "id=\""+ide+"\""; :}       
+                        | COLS IGUAL COMILLAS NUMERO:num COMILLAS      {: RESULT = "cols=\""+num+"\""; :}  
+                        | ROWS IGUAL COMILLAS NUMERO:num COMILLAS      {: RESULT = "rows=\""+num+"\""; :} 
                         | error;
                         
 
-paramsInput ::=    /* vacío */ 
-                |CORCHETE_IZQ parametros_input CORCHETE_DER
-                | paramsInput CORCHETE_IZQ parametros_input CORCHETE_DER;
+paramsInput ::=  CORCHETE_IZQ parametros_input:params CORCHETE_DER  {: RESULT = params; :}
+                | paramsInput:prev CORCHETE_IZQ parametros_input:params CORCHETE_DER  {: RESULT = prev + " " + params; :};
+  
 
-parametros_input ::= TYPE IGUAL COMILLAS type_input COMILLAS
-                | FONT_SIZE IGUAL COMILLAS PIXEL COMILLAS
-                | FONT_FAMI IGUAL COMILLAS font COMILLAS
-                | TEXT_ALIGN IGUAL COMILLAS align COMILLAS
-                | ID IGUAL COMILLAS IDENTIFICADOR COMILLAS
-                | COLOR IGUAL COMILLAS colors COMILLAS
+parametros_input ::= TYPE IGUAL COMILLAS type_input:type COMILLAS {: RESULT = "type=\""+type+"\""; :}            
+                | ID IGUAL COMILLAS IDENTIFICADOR:ide COMILLAS    {: RESULT = "id=\""+ide+"\""; :}        
+                | FONT_SIZE IGUAL COMILLAS PIXEL:pix COMILLAS     {: RESULT = " font-size: \" "+ pix   +"; \" "   ; :}   
+                | FONT_FAMI IGUAL COMILLAS font:fon COMILLAS      {: RESULT = " font-family: \" "+ fon +"; \" "   ; :}  
+                | TEXT_ALIGN IGUAL COMILLAS align:ali COMILLAS    {: RESULT = " text-align: \" "+ ali  +"; \" "   ; :}   
+                | COLOR IGUAL COMILLAS colors:col COMILLAS        {: RESULT = " color: \" "+ col+"  \"; "  ; :}
                 | error;
 
 type_input ::= TEXT         {: RESULT = "text"; :}
@@ -557,14 +705,14 @@ type_input ::= TEXT         {: RESULT = "text"; :}
                 | CHECKBOX  {: RESULT = "checkbox"; :}
                 | error;
 
-paramsSpam ::=    /* vacío */  {: RESULT = ""; :}
-                | CORCHETE_IZQ parametros_spam:params CORCHETE_DER  {: RESULT = params; :}
+paramsSpam ::=    CORCHETE_IZQ parametros_spam:params CORCHETE_DER  {: RESULT = params; :}
                 | paramsSpam:prev CORCHETE_IZQ parametros_spam:params CORCHETE_DER {: RESULT = prev + " " + params; :};
+              
 
-parametros_spam ::= COLOR IGUAL COMILLAS colors:col COMILLAS    {: RESULT = " color: \" "+ col        +"  \" "  ;:}       
-                | FONT_SIZE IGUAL COMILLAS PIXEL:pix COMILLAS   {: RESULT = " font-size:\" "+ pix   +"; \" "  ;:}        
-                | FONT_FAMI IGUAL COMILLAS font:fon COMILLAS    {: RESULT = " font-family:\" "+ fon +"; \" "  ;:}       
-                | TEXT_ALIGN IGUAL COMILLAS align:ali COMILLAS  {: RESULT = " text-align:\" "+ ali  +"; \" "  ;:}         
+parametros_spam ::= COLOR IGUAL COMILLAS colors:col COMILLAS    {: RESULT = " color: \" "+ col        +"  \"; "  ;:}       
+                | FONT_SIZE IGUAL COMILLAS PIXEL:pix COMILLAS   {: RESULT = " font-size: \" "+ pix   +"; \" "  ;:}        
+                | FONT_FAMI IGUAL COMILLAS font:fon COMILLAS    {: RESULT = " font-family: \" "+ fon +"; \" "  ;:}       
+                | TEXT_ALIGN IGUAL COMILLAS align:ali COMILLAS  {: RESULT = " text-align: \" "+ ali  +"; \" "  ;:}         
                 | ID IGUAL COMILLAS IDENTIFICADOR:ide COMILLAS  {: RESULT = " id = \" "+ ide +" \" "  ;:}         
                 | error;
 
@@ -587,10 +735,10 @@ colors ::= BLACK       :black     {: RESULT =black ; :}
             | HEXADECIMAL:hexa    {: RESULT =hexa ; :}                 
             | error;    
 
-align ::= LEFT      :lef  {RESULT= lef; :}     
-        | RIGHT     :rig  {RESULT= rig; :}           
-        | CENTER    :cen  {RESULT= cen; :}            
-        | JUSTIFY   :jus  {RESULT= jus; :}             
+align ::= LEFT      :lef  {: RESULT= lef; :}
+        | RIGHT     :rig  {: RESULT= rig; :}           
+        | CENTER    :cen  {: RESULT= cen; :}            
+        | JUSTIFY   :jus  {: RESULT= jus; :}             
         | error;
 
 
@@ -601,11 +749,6 @@ font ::= COURIER        :cou  {: RESULT= cou ; :}
         | SANS_SERIF    :san  {: RESULT= san ; :}            
         | error;
                 
-
-
-
-
-
 
 
 
