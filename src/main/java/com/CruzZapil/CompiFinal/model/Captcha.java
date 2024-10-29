@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Captcha {
 
-    @SerializedName("ID_TRIVIA")
+    @SerializedName("ID_CAPTCHA")
     private String id;
     @SerializedName("NOMBRE")
     private String nombre;
@@ -20,6 +20,10 @@ public class Captcha {
     public Captcha(String id, String nombre, List<Etiqueta> etiquetaHead,
             BodyContent bo) {
 
+                System.out.println(" desde objeto Captcha");
+                System.out.println("id: "+id);
+                System.out.println("nombre: "+nombre);
+                
         this.id = id;
         this.nombre = nombre;
         this.etiquetaHead = etiquetaHead;

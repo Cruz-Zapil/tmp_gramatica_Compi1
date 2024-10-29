@@ -20,14 +20,13 @@ public interface sym {
   public static final int HTML_C = 12;
   public static final int LLAVE_DER = 4;
   public static final int IGUAL = 106;
-  public static final int ENTERO = 143;
-  public static final int VALUE = 151;
+  public static final int ENTERO = 142;
+  public static final int VALUE = 150;
   public static final int SELECTED_C = 28;
   public static final int HREF = 43;
   public static final int IMG_C = 34;
   public static final int TEXTOAREA_C = 26;
   public static final int CORCHETE_DER = 6;
-  public static final int CADENA = 140;
   public static final int TEXTOAREA = 25;
   public static final int THENWHILE = 129;
   public static final int HEXADECIMAL = 61;
@@ -48,7 +47,6 @@ public interface sym {
   public static final int EOF = 0;
   public static final int COMPARACION = 99;
   public static final int SUMA = 107;
-  public static final int SPAN_C = 22;
   public static final int OPERADOR_RELACIONAL = 135;
   public static final int PURPLE = 57;
   public static final int FONT_FAMI = 65;
@@ -62,7 +60,7 @@ public interface sym {
   public static final int LETIMPAR_NUM = 113;
   public static final int OR = 103;
   public static final int NUMBER = 78;
-  public static final int TRUE = 141;
+  public static final int TRUE = 140;
   public static final int NAME = 82;
   public static final int P_C = 42;
   public static final int HTML = 11;
@@ -95,9 +93,9 @@ public interface sym {
   public static final int NAVY = 51;
   public static final int YELLOW = 59;
   public static final int DIVISION = 110;
-  public static final int ROW = 147;
+  public static final int ROW = 146;
   public static final int OPERADOR_ARITMETICO = 134;
-  public static final int PUNTO_COMA = 144;
+  public static final int PUNTO_COMA = 143;
   public static final int SILVER = 58;
   public static final int HUNTIL = 126;
   public static final int INPUT_C = 24;
@@ -115,10 +113,10 @@ public interface sym {
   public static final int TITLE_C = 16;
   public static final int BACKGROUND = 44;
   public static final int FUNTION = 137;
-  public static final int FALSE = 142;
+  public static final int FALSE = 141;
   public static final int HEAD_C = 14;
   public static final int THEN = 122;
-  public static final int CHARS = 150;
+  public static final int CHARS = 149;
   public static final int INTEGER = 94;
   public static final int HEIGHT = 88;
   public static final int STRING = 98;
@@ -128,19 +126,20 @@ public interface sym {
   public static final int SPAM = 21;
   public static final int LINK = 17;
   public static final int AQUA = 60;
-  public static final int COLUMN = 148;
+  public static final int COLUMN = 147;
   public static final int PAR_IZQ = 7;
   public static final int ARIAL = 68;
   public static final int LLAVE_IZQ = 3;
-  public static final int NUMERO = 146;
+  public static final int NUMERO = 145;
   public static final int LINK_C = 18;
   public static final int MAYOR_IGUAL = 102;
-  public static final int IDENTIFICADOR = 145;
+  public static final int SPAM_C = 22;
+  public static final int IDENTIFICADOR = 144;
   public static final int GREEN = 55;
   public static final int MULTIPLICACION = 133;
   public static final int CORCHETE_IZQ = 5;
   public static final int OLIVE = 46;
-  public static final int URL = 152;
+  public static final int URL = 151;
   public static final int LIME = 53;
   public static final int VERDANA = 67;
   public static final int COMA = 132;
@@ -157,7 +156,7 @@ public interface sym {
   public static final int BUTTON = 37;
   public static final int COLS = 83;
   public static final int SCRIPTING_C = 92;
-  public static final int GLOBAL = 149;
+  public static final int GLOBAL = 148;
   public static final int INIT = 120;
   public static final int DIV_C = 32;
   public static final int JUSTIFY = 75;
@@ -184,7 +183,7 @@ public interface sym {
   "BODY",
   "BODY_C",
   "SPAM",
-  "SPAN_C",
+  "SPAM_C",
   "INPUT",
   "INPUT_C",
   "TEXTOAREA",
@@ -302,7 +301,6 @@ public interface sym {
   "FUNTION",
   "COMILLA_SIMPLE",
   "DOS_PUNTOS",
-  "CADENA",
   "TRUE",
   "FALSE",
   "ENTERO",

@@ -43,6 +43,18 @@ division = ["/"]
 
 
 [" "]+                  {longitudToken = yytext().length();   yychar+=longitudToken  ;  }
+
+
+/*tipo de letras*/   
+["\""]"Courier"["\""]           {yychar+=7   ;  System.out.println(yytext()); return new Symbol(symbol.COURIER       ,  yyline , (int)yychar, yytext() ); }              
+["\""]"Verdana"["\""]            {yychar+=7   ;  System.out.println(yytext()); return new Symbol(symbol.VERDANA       ,  yyline , (int)yychar, yytext() ); }                   
+["\""]"Arial"["\""]              {yychar+=5   ;  System.out.println(yytext()); return new Symbol(symbol.ARIAL         ,  yyline , (int)yychar, yytext() ); }              
+["\""]"Geneva"["\""]             {yychar+=6   ;  System.out.println(yytext()); return new Symbol(symbol.GENEVA        ,  yyline , (int)yychar, yytext() ); }                
+"sans-serif"         {yychar+=10  ;  System.out.println(yytext()); return new Symbol(symbol.SANS_SERIF    ,  yyline , (int)yychar, yytext() ); }     
+"text-align"         {yychar+=10  ;  System.out.println(yytext()); return new Symbol(symbol.TEXT_ALIGN    ,  yyline , (int)yychar, yytext() ); }     
+
+
+
 /*   
 +++++++++++++++++++++++++++++++++++++++
 ++++++++++++ ETIQUETAS CC +++++++++++++
@@ -73,7 +85,7 @@ division = ["/"]
 "C_BODY"             {yychar+=6  ; System.out.println(yytext());  return new Symbol(symbol.BODY           ,  yyline , (int)yychar, yytext() ); }
 "/C_BODY"            {yychar+=7  ; System.out.println(yytext());  return new Symbol(symbol.BODY_C         ,  yyline , (int)yychar, yytext() ); }
 "C_SPAM"             {yychar+=6  ; System.out.println(yytext());  return new Symbol(symbol.SPAM           ,  yyline , (int)yychar, yytext() ); }
-"/C_SPAM"            {yychar+=7  ; System.out.println(yytext());  return new Symbol(symbol.SPAN_C         ,  yyline , (int)yychar, yytext() ); }
+"/C_SPAM"            {yychar+=7  ; System.out.println("spam "+yytext());  return new Symbol(symbol.SPAM_C         ,  yyline , (int)yychar, yytext() ); }
 "C_INPUT"            {yychar+=7  ; System.out.println(yytext());  return new Symbol(symbol.INPUT          ,  yyline , (int)yychar, yytext() ); }
 "/C_INPUT"           {yychar+=8  ; System.out.println(yytext());  return new Symbol(symbol.INPUT_C        ,  yyline , (int)yychar, yytext() ); }
 "C_TEXTAREA"         {yychar+=10 ; System.out.println(yytext());  return new Symbol(symbol.TEXTOAREA      ,  yyline , (int)yychar, yytext() ); }
@@ -117,7 +129,7 @@ division = ["/"]
 "silver"             {yychar+=6  ;  System.out.println(yytext()); return new Symbol(symbol.SILVER         ,  yyline , (int)yychar, yytext() ); }  
 "yellow"             {yychar+=6  ;  System.out.println(yytext()); return new Symbol(symbol.YELLOW         ,  yyline , (int)yychar, yytext() ); }  
 "aqua"               {yychar+=4  ;  System.out.println(yytext()); return new Symbol(symbol.AQUA           ,  yyline , (int)yychar, yytext() ); }
-
+"ARIAL,"              {yychar+=5  ;  System.out.println(yytext()); return new Symbol(symbol.ARIAL          ,  yyline , (int)yychar, yytext() ); }
 /* colores                         hexadecimal*/
 "#"([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})      {longitudToken = yytext().length();  yychar+=longitudToken   ;  System.out.println(yytext()); return new Symbol(symbol.HEXADECIMAL  ,  yyline , (int)yychar, yytext() ); }
 
@@ -127,14 +139,11 @@ division = ["/"]
 [0-9]+"px"           {yychar+=5   ;  System.out.println(yytext()); return new Symbol(symbol.PIXEL         ,  yyline , (int)yychar, yytext() ); } 
 
 "font-family"        {yychar+=11  ;  System.out.println(yytext()); return new Symbol(symbol.FONT_FAMI     ,  yyline , (int)yychar, yytext() ); }    
-/*tipo de letras*/                                                                                        
-"Courier"            {yychar+=7   ;  System.out.println(yytext()); return new Symbol(symbol.COURIER       ,  yyline , (int)yychar, yytext() ); }              
-"Verdana"            {yychar+=7   ;  System.out.println(yytext()); return new Symbol(symbol.VERDANA       ,  yyline , (int)yychar, yytext() ); }                   
-"Arial"              {yychar+=5   ;  System.out.println(yytext()); return new Symbol(symbol.ARIAL         ,  yyline , (int)yychar, yytext() ); }              
-"Geneva"             {yychar+=6   ;  System.out.println(yytext()); return new Symbol(symbol.GENEVA        ,  yyline , (int)yychar, yytext() ); }                
-"sans-serif"         {yychar+=10  ;  System.out.println(yytext()); return new Symbol(symbol.SANS_SERIF    ,  yyline , (int)yychar, yytext() ); }     
 
-"text-align"         {yychar+=10  ;  System.out.println(yytext()); return new Symbol(symbol.TEXT_ALIGN    ,  yyline , (int)yychar, yytext() ); }     
+
+
+
+
 // tipode justificacion de letra
 "left"               {yychar+=4   ;  System.out.println(yytext()); return new Symbol(symbol.LEFT          ,  yyline , (int)yychar, yytext() ); }              
 "right"              {yychar+=5   ;  System.out.println(yytext()); return new Symbol(symbol.RIGHT         ,  yyline , (int)yychar, yytext() ); }              
@@ -155,7 +164,7 @@ division = ["/"]
 "row"                {yychar+=3   ;  System.out.println(yytext()); return new Symbol(symbol.ROW           ,  yyline , (int)yychar, yytext() ); } 
 "cols"               {yychar+=4   ;  System.out.println(yytext()); return new Symbol(symbol.COLS          ,  yyline , (int)yychar, yytext() ); }             
 "rows"               {yychar+=4   ;  System.out.println(yytext()); return new Symbol(symbol.ROWS          ,  yyline , (int)yychar, yytext() ); }             
-"class"              {yychar+=5   ;  System.out.println(yytext()); return new Symbol(symbol.CLASS         ,  yyline , (int)yychar, yytext() ); }              
+"classe"             {yychar+=5   ;  System.out.println(yytext()); return new Symbol(symbol.CLASS         ,  yyline , (int)yychar, yytext() ); }              
 "src"                {yychar+=3   ;  System.out.println(yytext()); return new Symbol(symbol.SRC           ,  yyline , (int)yychar, yytext() ); }            
 "width"              {yychar+=5   ;  System.out.println(yytext()); return new Symbol(symbol.WIDTH         ,  yyline , (int)yychar, yytext() ); }              
 "height"             {yychar+=6   ;  System.out.println(yytext()); return new Symbol(symbol.HEIGHT        ,  yyline , (int)yychar, yytext() ); }               
@@ -268,7 +277,7 @@ division = ["/"]
 ^[-+]?[0-9]{1,4}                   {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println(yytext());       return new Symbol(symbol.ENTERO       , yyline  ,  (int)yychar, yytext() ); }
 ^[-+]?(0|[1-9][0-9]*)\.[0-9]{1,4}  {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println(yytext());       return new Symbol(symbol.DECIMAL      , yyline  ,  (int)yychar, yytext() ); }
 
-{TEXTS}                      {longitudToken = yytext().length(); yychar+=longitudToken; System.out.println(" txt "+yytext()); return new Symbol(symbol.TEXT, yyline, (int)yychar, yytext() ); }
+{TEXTS}                            {longitudToken = yytext().length(); yychar+=longitudToken; System.out.println(" txt "+yytext()); return new Symbol(symbol.TEXT, yyline, (int)yychar, yytext() ); }
 
 [a-zA-Z][a-zA-Z0-9_]*              {longitudToken = yytext().length();   yychar+=longitudToken;  System.out.println("id " +yytext());       return new Symbol(symbol.IDENTIFICADOR, yyline  ,  (int)yychar, yytext() ); }
 

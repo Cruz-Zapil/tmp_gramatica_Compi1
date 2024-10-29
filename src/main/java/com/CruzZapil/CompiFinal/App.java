@@ -2,12 +2,15 @@ package com.CruzZapil.CompiFinal;
 
 import java.io.StringReader;
 
-import org.apache.tools.ant.filters.ReplaceTokens.Token;
 
 import com.CruzZapil.CompiFinal.gramatica.LexerCC;
 import com.CruzZapil.CompiFinal.gramatica.parser;
+import com.CruzZapil.CompiFinal.model.Captcha;
+import com.CruzZapil.CompiFinal.model.etiqueta.Etiqueta;
+import com.CruzZapil.CompiFinal.util.GuardarInfo;
 
-import java_cup.runtime.Symbol;
+import java.util.ArrayList;
+
 
 import java.io.Reader;
 
@@ -66,13 +69,11 @@ String hola = "<C_CC [id=\"captcha_matematico_1\"] [name= \"Captcha Matemático 
 "    !! Un salto normal\n" +
 "    <C_BR>\n" +
 "    !! Información de la operación a resolver en el captcha\n" +
-"    <C_SPAM [id= \"mostrar_1\"] [text-align= \"center\"] [color= \"#3366ff\"] > ¿ Qué resultado genera la operación siguiente: 5+5 ?</C_SPAM>\n" +
-"    !! Input para la Respuesta del usuario generado con un scripting\n" +
-
+"    <C_SPAM [id=\"hola_12\"][color=\"fuchsia\"] [font-family=\"ARIAL,\" ] > HOLA MUNDO</C_SPAM>   "+
 "    !! Boton que llama a la funcionalidad calc\n" +
 "    <C_BUTTON [id= \"boton_1\"] [onclick= \"FUNCTION_calc()\"] [background=\"green\"]> Procesar...</C_BUTTON>\n" +
+"    <C_DIV [id=\"primer_div\"][ class =\"row\" ][color=\"purple\"]> Procesar... <C_SPAM [id=\"hola_12\"][color=\"fuchsia\"] [font-family=\"ARIAL,\" ] > HOLA MUNDO</C_SPAM>   </C_DIV>" +
 "    !! Scripting para la función calc\n" +
-
 "</C_BODY>\n" +
 "</C_CC>\n" +
 "!! Fin de estructura CC";
@@ -82,18 +83,20 @@ String hola = "<C_CC [id=\"captcha_matematico_1\"] [name= \"Captcha Matemático 
 
         // Pasa la cadena al lexer
         StringReader reader = new StringReader(hola);
-       LexerCC lexer = new LexerCC(reader);
+        LexerCC lexer = new LexerCC(reader);
         parser parser = new parser(lexer);
         parser.parse();
 
 
         // Procesa los tokens
-        parser.getCaptcha().toString();
-        
+        System.out.println("-----> "+ parser.getCaptcha().toString());
+
+
+        ArrayList<Captcha> listaEtiqueta = new ArrayList<Captcha>();
+        listaEtiqueta.add(parser.getCaptcha());
   
-      
-      //  LexerCC lexer = new LexerCC(reader1);
-    
+         GuardarInfo guardar = new GuardarInfo();
+         guardar.guardarDatoTrivia(listaEtiqueta);
      
 
 

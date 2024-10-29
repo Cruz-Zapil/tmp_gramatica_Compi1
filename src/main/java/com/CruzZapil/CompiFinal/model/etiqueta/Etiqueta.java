@@ -13,7 +13,7 @@ public class Etiqueta {
     private String parametro;
     @SerializedName("CONTENIDO")
     private String contenido;
-    @SerializedName("HIJOS")
+    @SerializedName("ETIQUETAS")
     private List<Etiqueta> hijos;
 
 
